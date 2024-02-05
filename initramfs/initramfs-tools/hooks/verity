@@ -1,0 +1,31 @@
+#!/bin/sh
+
+set -e
+
+PREREQ=""
+
+prereqs () {
+	echo "${PREREQ}"
+}
+
+case "${1}" in
+	prereqs)
+		prereqs
+		exit 0
+		;;
+esac
+
+. /usr/share/initramfs-tools/hook-functions
+
+manual_add_modules dm-verity
+manual_add_modules overlay
+copy_exec /usr/sbin/veritysetup
+#copy_exec /usr/sbin/dmsetup
+#copy_exec /usr/bin/strace
+
+#copy_file configfile /usr/lib/ssl/openssl.cnf
+#copy_exec /usr/lib/x86_64-linux-gnu/ossl-modules/legacy.so
+
+copy_exec /usr/bin/tpm2_pcrevent
+copy_exec /usr/lib/x86_64-linux-gnu/libtss2-tcti-device.so.0
+copy_exec /usr/lib/x86_64-linux-gnu/libtss2-tcti-device.so.0.0.0

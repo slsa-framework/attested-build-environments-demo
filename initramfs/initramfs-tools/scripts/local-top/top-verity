@@ -1,0 +1,101 @@
+#!/bin/sh
+
+set -e
+
+PREREQ=""
+
+prereqs()
+{
+	echo "${PREREQ}"
+}
+
+case "${1}" in
+	prereqs)
+		prereqs
+		exit 0
+		;;
+esac
+
+for x in $(cat /proc/cmdline); do
+#for x in $(cat tmpcmdline); do
+        case ${x} in
+        veritydata=*)
+                value=${x#*=}
+
+                # Find the device node path depending on the form of veritydata= :
+                case ${value} in
+                UUID=*)
+                        VERITYDATADEV=/dev/disk/by-uuid/${value#UUID=}
+                        ;;
+                LABEL=*)
+                        VERITYDATADEV=/dev/disk/by-label/${value#LABEL=}
+                        ;;
+                *)
+                        VERITYDATADEV=${value}
+                        ;;
+                esac
+        ;;
+        veritytree=*)
+                value=${x#*=}
+
+                # Find the device node path depending on the form of veritytree= :
+                case ${value} in
+                UUID=*)
+                        VERITYTREEDEV=/dev/disk/by-uuid/${value#UUID=}
+                        ;;
+                LABEL=*)
+                        VERITYTREEDEV=/dev/disk/by-label/${value#LABEL=}
+                        ;;
+                *)
+                        VERITYTREEDEV=${value}
+                        ;;
+                esac
+        ;;
+        verityhash=*)
+                VERITYHASH=${x#*=}
+        ;;
+        verityname=*)
+                VERITYNAME=${x#*=}
+        ;;
+        esac
+done
+
+SETTINGS_COUNT=0
+if [ -n "$VERITYDATADEV" ]; then
+    SETTINGS_COUNT=$((SETTINGS_COUNT+1))
+fi
+if [ -n "$VERITYTREEDEV" ]; then
+    SETTINGS_COUNT=$((SETTINGS_COUNT+1))
+fi
+if [ -n "$VERITYHASH" ]; then
+    SETTINGS_COUNT=$((SETTINGS_COUNT+1))
+fi
+if [ -n "$VERITYNAME" ]; then
+    SETTINGS_COUNT=$((SETTINGS_COUNT+1))
+fi
+
+if [ $SETTINGS_COUNT -eq 0 ]; then
+    /scripts/measure-event "VERITY_BYPASS"
+    echo "No verity settings"
+    exit 0
+fi
+
+if [ $SETTINGS_COUNT -ne 4 ]; then
+    /scripts/measure-event "VERITY_FAILURE"
+    echo "Verity settings incorrect! Must supply veritydata, veritytree, verityhash, verityname"
+    exit 1
+fi
+
+echo "Opening verity device"
+/scripts/measure-event "VERITY_HASH: $VERITYHASH"
+
+ret=0
+veritysetup -v open "$VERITYDATADEV" "$VERITYNAME" "$VERITYTREEDEV" "$VERITYHASH" || ret=$?
+
+if [ ! $ret ]; then
+    echo "veritysetup failed!"
+    /scripts/measure-event "VERITY_FAILURE"
+else
+    echo "Verity device created!"
+    /scripts/measure-event "VERITY_SUCCESS"
+fi
