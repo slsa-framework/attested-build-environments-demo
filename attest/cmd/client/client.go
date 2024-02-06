@@ -8,6 +8,7 @@ import (
 	"flag"
 	"log"
 	"os"
+	"sort"
 
 	"github.com/chkimes/image-attestation/internal"
 	"github.com/google/go-tpm/legacy/tpm2"
@@ -85,6 +86,50 @@ func main() {
 		log.Fatalf("couldn't quote PCRs: %v", err)
 	}
 
+	// PCR_Read only supports reading 8 PCRs at a time
+	pcrsel = tpm2.PCRSelection{
+		Hash: tpm2.AlgSHA256,
+		PCRs: []int{0, 1, 2, 3, 4, 5, 6, 7},
+	}
+	pcrs, err := tpm2.ReadPCRs(rwc, pcrsel)
+	if err != nil {
+		log.Fatalf("couldn't read PCRs: %v", err)
+	}
+
+	// convert pcrs map to a list of PCRValue
+	var pcrValues []internal.PCRValue
+	for k, v := range pcrs {
+		pcrValues = append(pcrValues, internal.PCRValue{
+			Index: k,
+			Value: v,
+		})
+	}
+
+	// read remaining PCRs
+	pcrsel = tpm2.PCRSelection{
+		Hash: tpm2.AlgSHA256,
+		PCRs: []int{8, 9, 11},
+	}
+	pcrs, err = tpm2.ReadPCRs(rwc, pcrsel)
+	if err != nil {
+		log.Fatalf("couldn't read PCRs: %v", err)
+	}
+
+	for k, v := range pcrs {
+		pcrValues = append(pcrValues, internal.PCRValue{
+			Index: k,
+			Value: v,
+		})
+	}
+
+	sort.Slice(pcrValues, func(i, j int) bool {
+		return pcrValues[i].Index < pcrValues[j].Index
+	})
+	log.Printf("PCR Values:")
+	for _, pcr := range pcrValues {
+		log.Printf("\t%d: %x", pcr.Index, pcr.Value)
+	}
+
 	log.Printf("Quote Data: %x", quoteData)
 	log.Printf("Quote Sig: %x", quoteSig)
 
@@ -94,6 +139,7 @@ func main() {
 		VerityEventLog: verityMeasurements,
 		QuoteData:      quoteData,
 		QuoteSignature: quoteSig,
+		PCRs:           pcrValues,
 	}
 	json, err := json.Marshal(attestation)
 	if err != nil {
