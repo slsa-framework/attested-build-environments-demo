@@ -13,3 +13,7 @@ type PCRValue struct {
 	Index int    `json:"index"`
 	Value []byte `json:"value"`
 }
+
+type ExpectedPCRs struct {
+	PCRs []PCRValue `json:"pcrs"`
+}

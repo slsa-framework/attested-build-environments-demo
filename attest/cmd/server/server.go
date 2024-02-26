@@ -26,8 +26,11 @@ import (
 var intermediateCA []byte
 
 var (
-	attestationPath = flag.String("attestation-path", "attest.json", "File path for the attestation document")
-	verityRootHash  = flag.String("verity-root-hash", "7c4770215babcd808f0b5d440bec40f1d0757fd25ca584a10781a00b7e239a0c", "Root hash for the verity device")
+	attestationPath  = flag.String("attestation-path", "attest.json", "File path for the attestation document")
+	kernelHash       = flag.String("kernel-hash", "dc13e62d8601fe4934edce87eee853f36904b7497adadb763e7e5ac7c096233d", "Expected kernel hash")
+	initramfsHash    = flag.String("initramfs-hash", "b97ea6cc8b8668e49f5d1f92c0a921338f32788b289711e58f506c5179c462b8", "Expected initramfs hash")
+	verityRootHash   = flag.String("verity-root-hash", "7c4770215babcd808f0b5d440bec40f1d0757fd25ca584a10781a00b7e239a0c", "Root hash for the verity device")
+	expectedPcrsPath = flag.String("expected-pcrs-path", "expected-pcrs.json", "File path for the expected PCR values")
 )
 
 func main() {
@@ -47,6 +50,17 @@ func main() {
 	err = json.Unmarshal(attestationBytes, &attestation)
 	if err != nil {
 		log.Fatalf("couldn't deserialize attestation: %v", err)
+	}
+
+	expectedPcrsBytes, err := os.ReadFile(*expectedPcrsPath)
+	if err != nil {
+		log.Fatalf("couldn't read expected PCR values: %v", err)
+	}
+
+	var expectedPcrs internal.ExpectedPCRs
+	err = json.Unmarshal(expectedPcrsBytes, &expectedPcrs)
+	if err != nil {
+		log.Fatalf("couldn't deserialize expected PCR values: %v", err)
 	}
 
 	akCert, err := x509.ParseCertificate(attestation.AkCert)
@@ -108,7 +122,7 @@ func main() {
 
 	log.Printf("Nonce: %x", quote.ExtraData)
 
-	// Validate that the PCRs in the quote match our expected PCRs of 0-9, 11jj
+	// Validate that the PCRs in the quote match our expected PCRs of 0-9, 11
 	PCRsCopy := make([]int, len(quote.AttestedQuoteInfo.PCRSelection.PCRs))
 	copy(PCRsCopy, quote.AttestedQuoteInfo.PCRSelection.PCRs)
 	sort.Slice(PCRsCopy, func(i, j int) bool {
@@ -172,11 +186,26 @@ func main() {
 
 	log.Printf("verity hash: %x", verityHash)
 
+	attestationPcrs := make(map[int][]byte)
+	for _, pcr := range attestation.PCRs {
+		attestationPcrs[pcr.Index] = pcr.Value
+	}
+
+	for _, expectedPcr := range expectedPcrs.PCRs {
+		if attestedPcr, ok := attestationPcrs[expectedPcr.Index]; !ok {
+			log.Fatalf("PCR %d missing from attestation", expectedPcr.Index)
+		} else if !bytes.Equal(expectedPcr.Value, attestedPcr) {
+			log.Fatalf("PCR %d value mismatch", expectedPcr.Index)
+		}
+	}
+
+	log.Printf("Attestation verified successfully")
+
 	// TODO:
-	// - Validate PCRs 0-9 against boot chain
-	// - Validate grub, kernel, initramfs hashes from boot event log
-	// - Validate kernel command line to make sure it's not using break=
-	// - Validate verity hash from verity event log
+	//   - Validate grub, kernel, initramfs hashes from boot event log
+	//   - Validate kernel command line to make sure it's not using break=
+	// ^-- These are optional since we are validating the PCRs exactly, but
+	//     they are good to have for extra validation.
 }
 
 func validateVerityEventLog(verityLog []byte, pcrValue internal.PCRValue, hash crypto.Hash) ([]byte, error) {
