@@ -16,6 +16,7 @@ az vm create --resource-group $AZURE_RESOURCE_GROUP \
              --name $AZURE_VM_NAME \
              --image Canonical:0001-com-ubuntu-minimal-mantic:minimal-23_10-gen2:23.10.202402260 \
              --size Standard_D4ds_v5 \
+             --admin-username azureuser \
              --ssh-key-value ~/.ssh/id_rsa.pub \
              --security-type TrustedLaunch \
              --nic-delete-option delete \
