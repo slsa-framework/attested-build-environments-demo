@@ -39,5 +39,6 @@ jobs:
 
     - name: Generate provenance
       uses: github-early-access/generate-build-provenance@67d881a62db43e3a31b5d5fdc5454a540c7ea56e #main
+      with:
         subject-path: img/*
     
