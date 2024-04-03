@@ -23,12 +23,11 @@ jobs:
         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
     - name: Build Azure VM
-      with:
-        env:
-          AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          AZURE_RESOURCE_GROUP: ${{ secrets.AZURE_RESOURCE_GROUP }}
-          AZURE_LOCATION: ${{ secrets.AZURE_LOCATION }}
-          AZURE_VM_NAME: ${{ secrets.AZURE_VM_NAME }}
+      env:
+        AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        AZURE_RESOURCE_GROUP: ${{ secrets.AZURE_RESOURCE_GROUP }}
+        AZURE_LOCATION: ${{ secrets.AZURE_LOCATION }}
+        AZURE_VM_NAME: ${{ secrets.AZURE_VM_NAME }}
       run: |
         set -e
 
