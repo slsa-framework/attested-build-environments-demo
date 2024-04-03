@@ -17,18 +17,21 @@ az vm create --resource-group $AZURE_RESOURCE_GROUP \
              --ssh-key-value ~/.ssh/id_rsa.pub \
              --security-type TrustedLaunch > create.log
 
-trap 'cleanup' EXIT
-
-IP_ADDR=$(cat create.log | jq -r .publicIpAddress | tail -n 1)
-echo "VM created with IP address: $IP_ADDR"
-
-scp -r -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa "$SCRIPTPATH/../initramfs" azureuser@$IP_ADDR:
-scp    -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa "$SCRIPTPATH/build-vm.sh"  azureuser@$IP_ADDR:
-ssh    -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa azureuser@$IP_ADDR "sudo ./build-vm.sh"
-scp    -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa azureuser@$IP_ADDR:~/image.tar.gz .
-
 cleanup() {
     echo "Cleaning up"
     az vm delete --resource-group $AZURE_RESOURCE_GROUP --name $AZURE_VM_NAME --yes
     rm -f create.log
 }
+
+trap 'cleanup' EXIT
+
+IP_ADDR=$(cat create.log | jq -r .publicIpAddress | tail -n 1)
+echo "VM created with IP address: $IP_ADDR"
+
+echo "Waiting for public key to load into VM"
+sleep 10
+
+scp -r -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa "$SCRIPTPATH/../initramfs" azureuser@$IP_ADDR:
+scp    -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa "$SCRIPTPATH/build-vm.sh"  azureuser@$IP_ADDR:
+ssh    -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa azureuser@$IP_ADDR "sudo ./build-vm.sh"
+scp    -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa azureuser@$IP_ADDR:~/image.tar.gz .
