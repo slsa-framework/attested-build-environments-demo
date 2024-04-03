@@ -18,7 +18,7 @@ az vm create --resource-group $AZURE_RESOURCE_GROUP \
              --security-type TrustedLaunch \
              --nic-delete-option delete \
              --os-disk-delete-option delete \
-             > create.log
+             | tee create.log
 
 
 cleanup() {
