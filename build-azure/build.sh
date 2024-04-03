@@ -34,9 +34,6 @@ trap 'cleanup' EXIT
 IP_ADDR=$(cat create.log | jq -r .publicIpAddress | tail -n 1)
 echo "VM created with IP address: $IP_ADDR"
 
-echo "Waiting for public key to load into VM..."
-sleep 60
-
 echo "Copying files to VM..."
 scp -r -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa "$SCRIPTPATH/../initramfs" azureuser@$IP_ADDR:
 scp    -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa "$SCRIPTPATH/build-vm.sh"  azureuser@$IP_ADDR:
