@@ -15,7 +15,11 @@ az vm create --resource-group $AZURE_RESOURCE_GROUP \
              --image Canonical:0001-com-ubuntu-minimal-mantic:minimal-23_10-gen2:23.10.202402260 \
              --size Standard_D4ds_v5 \
              --ssh-key-value ~/.ssh/id_rsa.pub \
-             --security-type TrustedLaunch > create.log
+             --security-type TrustedLaunch \
+             --nic-delete-option delete \
+             --os-disk-delete-option delete \
+             > create.log
+
 
 cleanup() {
     echo "Cleaning up"
