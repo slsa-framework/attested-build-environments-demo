@@ -10,5 +10,5 @@ if [ "$EUID" -ne 0 ]
 fi
 
 apt-get update
-apt-get install -y initramfs-tools
-cp -r "$SCRIPTPATH/initramfs-tools" /usr/share/initramfs-tools
+apt-get install -y initramfs-tools zstd tpm2-tools
+cp -r "$SCRIPTPATH/initramfs-tools" /usr/share
