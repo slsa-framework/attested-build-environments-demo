@@ -23,6 +23,12 @@ curl https://github.com/chkimes.keys >> /home/azureuser/.ssh/authorized_keys
 curl https://github.com/marcelamelara.keys >> /home/azureuser/.ssh/authorized_keys
 chown -R azureuser:azureuser /home/azureuser/.ssh
 
+echo Patching up fstab
+# Use UEFI label for the EFI partition instead of UUID
+sed -i 's/UUID=[^\s]\+\(\s\+\/boot\/efi\)/LABEL=UEFI\1/' /etc/fstab
+# Remove the /mnt partition, it should already be used for overlay
+sed -i '/\/mnt/d' /etc/fstab
+
 echo Create and mount ext4 volume
 TMP_DRIVE_PATH="/mnt/fs-tmp"
 FS_FILE="$TMP_DRIVE_PATH/fs.img"
