@@ -16,6 +16,13 @@ apt-get install -y rsync cryptsetup
 echo Installing software desired for the eventual image
 apt-get install -y golang
 
+echo Setting public keys
+mkdir -p /home/azureuser/.ssh
+touch /home/azureuser/.ssh/authorized_keys
+curl https://github.com/chkimes.keys >> /home/azureuser/.ssh/authorized_keys
+curl https://github.com/marcelamelara.keys >> /home/azureuser/.ssh/authorized_keys
+chown -R azureuser:azureuser /home/azureuser/.ssh
+
 echo Create and mount ext4 volume
 TMP_DRIVE_PATH="/mnt/fs-tmp"
 FS_FILE="$TMP_DRIVE_PATH/fs.img"
