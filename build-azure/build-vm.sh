@@ -14,7 +14,7 @@ apt-get update
 apt-get install -y rsync cryptsetup
 
 echo Installing software desired for the eventual image
-apt-get install -y golang
+apt-get install -y golang tpm2-tools
 
 echo Setting public keys
 mkdir -p /home/azureuser/.ssh
