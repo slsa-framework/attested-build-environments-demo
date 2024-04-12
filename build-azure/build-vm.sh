@@ -50,6 +50,13 @@ mount $FS_FILE $FS_MOUNT
 echo Copying rootfs into new volume
 rsync -ax / $FS_MOUNT/
 
+echo Cleaning up file from new volume
+rm -rf $FS_MOUNT/tmp/*
+rm -rf $FS_MOUNT/home/azureuser/* # this glob should leave the .ssh directory
+
+echo "Add a marker file to show that we're in an attested VM"
+touch $FS_MOUNT/home/azureuser/attested-vm
+
 echo Unmounting fs volume
 umount $FS_MOUNT
 rm -r $FS_MOUNT
