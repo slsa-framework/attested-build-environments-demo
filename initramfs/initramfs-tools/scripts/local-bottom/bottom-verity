@@ -51,6 +51,17 @@ umount /root
 mkdir -p /roroot
 mount "/dev/mapper/$verityname" /roroot
 
+# TODO: in a real implementation, encrypt the device
+
+# make sure overlay device is ext4
+ret=0
+blkid "$OVERLAYDEV" | grep TYPE=\"ext4\" || ret=$?
+
+if [ ! $ret ]; then
+    echo "Overlay device is not ext4! Clobbering..."
+    mkfs.ext4 -F "$OVERLAYDEV"
+fi
+
 # create/mount our overlayfs work and upper directories
 mkdir -p /mnt/overlay
 mount -w "$OVERLAYDEV" /mnt/overlay
