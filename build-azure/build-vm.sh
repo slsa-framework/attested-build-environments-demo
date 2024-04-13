@@ -29,6 +29,10 @@ sed -i 's/UUID=[^\s]\+\(\s\+\/boot\/efi\)/LABEL=UEFI\1/' /etc/fstab
 # Remove the /mnt partition, it should already be used for overlay
 sed -i '/\/mnt/d' /etc/fstab
 
+echo Remove apt postinstall steps that impact the boot flow
+rm /etc/kernel/postinst.d/zz-update-grub
+rm /etc/kernel/postinst.d/initramfs-tools
+
 echo Create and mount ext4 volume
 TMP_DRIVE_PATH="/mnt/fs-tmp"
 FS_FILE="$TMP_DRIVE_PATH/fs.img"
