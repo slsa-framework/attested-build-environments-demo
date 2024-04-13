@@ -69,11 +69,11 @@ echo Generating verity files
 veritysetup format $FS_FILE $TMP_DRIVE_PATH/fs-verity.img --root-hash-file $TMP_DRIVE_PATH/fs.hash
 
 echo Installing initramfs scripts and generate initramfs
-$SCRIPTPATH/initramfs/install.sh
-mkinitramfs -o $TMP_DRIVE_PATH/initrd-$(uname -r).img
+"$SCRIPTPATH"/initramfs/install.sh
+mkinitramfs -o "$TMP_DRIVE_PATH/initrd-$(uname -r).img"
 
 echo Copying the kernel
-cp /boot/vmlinuz-$(uname -r) $TMP_DRIVE_PATH
+cp "/boot/vmlinuz-$(uname -r)" $TMP_DRIVE_PATH
 
 echo Creating tarball
-tar -czf $SCRIPTPATH/image.tar.gz -C $TMP_DRIVE_PATH .
+tar -czf "$SCRIPTPATH"/image.tar.gz -C $TMP_DRIVE_PATH .
