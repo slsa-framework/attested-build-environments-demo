@@ -60,7 +60,7 @@ echo Ensuring overlay device "$OVERLAYDEV" is ext4
 ret=0
 blkid "$OVERLAYDEV" | grep TYPE=\"ext4\" || ret=$?
 
-if [ ! $ret ]; then
+if [ $ret -ne 0 ]; then
     echo "Overlay device is not ext4! Clobbering..."
     mkfs.ext4 -F "$OVERLAYDEV"
 fi
