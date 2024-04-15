@@ -47,13 +47,16 @@ if [ -z "$OVERLAYDEV" ]; then
 fi
 
 # ignore whatever the initramfs scripts did
+echo Un-mounting existing /root
 umount /root
+
+echo Mounting verity device to /roroot
 mkdir -p /roroot
 mount "/dev/mapper/$verityname" /roroot
 
 # TODO: in a real implementation, encrypt the device
 
-# make sure overlay device is ext4
+echo Ensuring overlay device "$OVERLAYDEV" is ext4
 ret=0
 blkid "$OVERLAYDEV" | grep TYPE=\"ext4\" || ret=$?
 
