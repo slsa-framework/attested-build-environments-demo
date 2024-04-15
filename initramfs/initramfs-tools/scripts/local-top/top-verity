@@ -92,7 +92,7 @@ echo "Opening verity device"
 ret=0
 veritysetup -v open "$VERITYDATADEV" "$VERITYNAME" "$VERITYTREEDEV" "$VERITYHASH" || ret=$?
 
-if [ ! $ret ]; then
+if [ $ret -ne 0 ]; then
     echo "veritysetup failed!"
     /scripts/measure-event "VERITY_FAILURE"
 else
