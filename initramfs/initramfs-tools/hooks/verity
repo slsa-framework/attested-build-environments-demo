@@ -20,6 +20,7 @@ esac
 manual_add_modules dm-verity
 manual_add_modules overlay
 copy_exec /usr/sbin/veritysetup
+copy_exec /usr/sbin/mkfs.ext4
 #copy_exec /usr/sbin/dmsetup
 #copy_exec /usr/bin/strace
 
