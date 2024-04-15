@@ -33,6 +33,12 @@ echo Remove apt postinstall steps that impact the boot flow
 rm /etc/kernel/postinst.d/zz-update-grub
 rm /etc/kernel/postinst.d/initramfs-tools
 
+echo Copying attestation binaries to sbin
+chmod +x client
+chmod +x server
+cp client /usr/sbin/attestation-client
+cp server /usr/sbin/attestation-server
+
 echo Create and mount ext4 volume
 TMP_DRIVE_PATH="/mnt/fs-tmp"
 FS_FILE="$TMP_DRIVE_PATH/fs.img"
