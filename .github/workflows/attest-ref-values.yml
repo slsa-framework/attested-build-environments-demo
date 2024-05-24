@@ -23,9 +23,8 @@ jobs:
     - name: Install scai-gen CLI tools
       shell: bash
       run: |
-        ls
+        ls $GITHUB_WORKSPACE
         go install github.com/in-toto/scai-demos/scai-gen@latest
-        ls
 
     - name: Generate initrd SLSA AttributeAssertion
       id: gen-initrd-assert
