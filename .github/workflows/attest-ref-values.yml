@@ -1,0 +1,60 @@
+name: Attest Reference Values
+
+on:
+  workflow_dispatch
+
+permissions:
+  id-token: write
+  contents: write
+jobs:
+  ref-value:
+    if: github.actor == 'marcelamelara'
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 #v4
+
+    - name: Setup Go
+      uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491 #v5
+      with:
+        go-version: 1.20.x
+
+    - name: Install scai-gen CLI tools
+      shell: bash
+      run: |
+        go install github.com/in-toto/scai-demos/scai-gen@latest
+
+    - name: Generate initrd SLSA AttributeAssertion
+      id: gen-initrd-assert
+      uses: in-toto/scai-demos/.github/actions/scai-gen-assert@main
+      with:
+        attribute: "RefValue: initrd-6.5.0-1015-azure.img"
+        evidence-file: "examples/initrd-6.5.0-1015-azure.img.sigstore.json"
+        evidence-type: "application/vnd.dev.sigstore.bundle+json;version=0.2"
+        assertion-name: "refvalue-initrd-assertion.json"
+
+    - name: Generate PCR ref value SCAI AttributeAssertion
+      id: gen-pcr-assert
+      uses: in-toto/scai-demos/.github/actions/scai-gen-assert@main
+      with:
+        attribute: "RefValue: PCRs"
+        evidence-file: "examples/expected-pcrs.json"
+        evidence-type: "application/json"
+        assertion-name: "refvalue-pcrs-assertion.json"
+
+    - name: Generate RefValue SCAI AttributeReport
+      id: gen-refvalue-report
+      uses: in-toto/scai-demos/.github/actions/scai-gen-report@main
+      with:
+        subject: "image.zip-rd.json"
+        attr-assertions: "${{ steps.gen-pcr-assert.outputs.assertion-name }} ${{ steps.gen-initrd-assert.outputs.assertion-name }}"
+        report-name: "ref-values.scai.json"
+
+    - name: Sign and upload generated SCAI report (Sigstore)
+      id: sign-report
+      uses: in-toto/scai-demos/.github/actions/scai-gen-sigstore@main
+      with:
+        statement-name: ref-values.scai.json
+        statement-path: $GITHUB_WORKSPACE/temp
+        attestation-name: sig.ref-values.scai.json
