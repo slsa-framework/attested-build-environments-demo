@@ -30,6 +30,7 @@ jobs:
       uses: in-toto/scai-demos/.github/actions/scai-gen-assert@main
       with:
         attribute: "RefValue: initrd-6.5.0-1015-azure.img"
+        download-evidence: false
         evidence-file: "examples/initrd-6.5.0-1015-azure.img.sigstore.json"
         evidence-type: "application/vnd.dev.sigstore.bundle+json;version=0.2"
         assertion-name: "refvalue-initrd-assertion.json"
@@ -39,6 +40,7 @@ jobs:
       uses: in-toto/scai-demos/.github/actions/scai-gen-assert@main
       with:
         attribute: "RefValue: PCRs"
+        download-evidence: false
         evidence-file: "examples/expected-pcrs.json"
         evidence-type: "application/json"
         assertion-name: "refvalue-pcrs-assertion.json"
