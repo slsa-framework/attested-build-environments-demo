@@ -23,7 +23,6 @@ jobs:
     - name: Install scai-gen CLI tools
       shell: bash
       run: |
-        ls $GITHUB_WORKSPACE
         go install github.com/in-toto/scai-demos/scai-gen@latest
 
     - name: Generate initrd SLSA AttributeAssertion
@@ -33,7 +32,7 @@ jobs:
         attribute: "RefValue: initrd-6.5.0-1015-azure.img"
         download-evidence: false
         evidence-file: "examples/initrd-6.5.0-1015-azure.img.sigstore.json"
-        evidence-type: "application/vnd.dev.sigstore.bundle+json;version=0.2"
+        evidence-type: "application/vnd.dev.sigstore.bundle"
         assertion-name: "refvalue-initrd-assertion.json"
 
     - name: Generate PCR ref value SCAI AttributeAssertion
