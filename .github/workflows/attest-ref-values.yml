@@ -49,7 +49,7 @@ jobs:
       id: gen-refvalue-report
       uses: in-toto/scai-demos/.github/actions/scai-gen-report@main
       with:
-        subject: "image.zip-rd.json"
+        subject: "examples/image.zip-rd.json"
         attr-assertions: "${{ steps.gen-pcr-assert.outputs.assertion-name }} ${{ steps.gen-initrd-assert.outputs.assertion-name }}"
         report-name: "ref-values.scai.json"
 
