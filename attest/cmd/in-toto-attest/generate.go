@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/chkimes/image-attestation/internal"
 	"github.com/in-toto/scai-demos/scai-gen/pkg/fileio"
@@ -12,41 +11,30 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// rootCmd represents the base command when called without any subcommands
-var rootCmd = &cobra.Command{
-	Use:   "attestor",
+var generateCmd = &cobra.Command{
+	Use:   "generate",
 	Args:  cobra.ExactArgs(1),
-	Short: "Generates a JSON-encoded VM image attestation (in-toto format)",
-	RunE:  genAttestation,
-}
-
-// Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the rootCmd.
-func Execute() {
-	err := rootCmd.Execute()
-	if err != nil {
-		os.Exit(1)
-	}
+	Short: "Generates a JSON-encoded in-toto Statement (unsigned) for a predicate about a given subject artifact",
+	RunE:  genStatement,
 }
 
 var (
-	outFile      string
 	targetFile   string
 	evidenceFile string
 	prettyPrint  bool
 )
 
 func init() {
-	rootCmd.Flags().StringVarP(
+	generateCmd.Flags().StringVarP(
 		&outFile,
 		"out-file",
 		"o",
 		"",
 		"Filename to write out the JSON-encoded object",
 	)
-	rootCmd.MarkFlagRequired("out-file") //nolint:errcheck
+	generateCmd.MarkFlagRequired("out-file") //nolint:errcheck
 
-	rootCmd.Flags().StringVarP(
+	generateCmd.Flags().StringVarP(
 		&targetFile,
 		"target",
 		"t",
@@ -54,7 +42,7 @@ func init() {
 		"The filename of the JSON-encoded target attestation file",
 	)
 
-	rootCmd.Flags().StringVarP(
+	generateCmd.Flags().StringVarP(
 		&evidenceFile,
 		"evidence",
 		"e",
@@ -62,7 +50,7 @@ func init() {
 		"The filename of the JSON-encoded evidence file",
 	)
 
-	rootCmd.Flags().BoolVar(
+	generateCmd.Flags().BoolVar(
 		&prettyPrint,
 		"pretty-print",
 		false,
@@ -70,7 +58,7 @@ func init() {
 	)
 }
 
-func genAttestation(_ *cobra.Command, args []string) error {
+func genStatement(_ *cobra.Command, args []string) error {
 	// want to make sure the AttributeAssertion is a JSON file
 	if !fileio.HasJSONExt(outFile) {
 		return fmt.Errorf("expected a .json extension for the generated SCAI AttributeAssertion file %s", outFile)
@@ -91,8 +79,4 @@ func genAttestation(_ *cobra.Command, args []string) error {
 	}
 
 	return fileio.WritePbToFile(st, outFile, prettyPrint)
-}
-
-func main() {
-	Execute()
 }
