@@ -1,0 +1,39 @@
+{
+    "_type": "https://in-toto.io/Statement/v1",
+    "subject": [
+        {
+            "name": "image.zip",
+            "digest": {
+                "sha256": "2c075d1d647c1b1330218e132f2c6f330d636172ed424a1da6c51e48b5c1cf51"
+            },
+            "downloadLocation": "https://github.com/chkimes/image-attestation/actions/runs/8694525083/artifacts/1415603429"
+        }
+    ],
+    "predicateType": "https://in-toto.io/attestation/scai/attribute-report/v0.2",
+    "predicate": {
+        "attributes": [
+            {
+                "attribute": "RefValue:PCRs",
+                "evidence": {
+                    "digest": {
+                        "sha256": "bdcdc9f6f7e7d9dbc7a5358cbfe927afc4ab2c0d3887bf593d19c131efe331eb"
+                    },
+                    "downloadLocation": "https://github.com/chkimes/image-attestation/actions/runs/9507648999",
+                    "mediaType": "application/json",
+                    "name": "examples/expected-pcrs.json"
+                }
+            },
+            {
+                "attribute": "RefValue:initrd-6.5.0-1015-azure.img",
+                "evidence": {
+                    "digest": {
+                        "sha256": "1a8704fbfd67e72c992512e3197f481dfd8207b2b6db7866456dcef8254f9baf"
+                    },
+                    "downloadLocation": "https://github.com/chkimes/image-attestation/actions/runs/9507648999",
+                    "mediaType": "application/vnd.dev.sigstore.bundle",
+                    "name": "examples/initrd-6.5.0-1015-azure.img.sigstore.json"
+                }
+            }
+        ]
+    }
+}
