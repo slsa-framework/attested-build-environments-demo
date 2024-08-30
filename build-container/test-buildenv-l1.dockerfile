@@ -12,5 +12,5 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /tmp
-RUN wget https://github.com/chkimes/image-attestation/blob/buildenv-l1-container/build-container/hello.py
+RUN wget https://raw.githubusercontent.com/chkimes/image-attestation/main/build-container/hello.py
 RUN python3 hello.py

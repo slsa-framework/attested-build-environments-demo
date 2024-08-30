@@ -7,7 +7,7 @@ permissions:
   id-token: write
   contents: write
 jobs:
-  ref-value:
+  build:
     if: github.actor == 'marcelamelara'
     runs-on: ubuntu-latest
 
@@ -19,3 +19,8 @@ jobs:
       shell: bash
       run: |
         docker build --file build-container/test-buildenv-l1.dockerfile .
+
+    #- name: Generate SLSA Provenance
+    #  uses: actions/attest-build-provenance@6149ea5740be74af77f260b9db67e633f6b0a9a1 #v1.4.2
+    #  with:
+    #    subject-name: 
