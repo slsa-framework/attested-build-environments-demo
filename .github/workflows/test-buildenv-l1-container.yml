@@ -1,34 +1,33 @@
 name: Test for BuildEnv L1 container build
 
 on:
-  workflow_dispatch
+  push:
+    branches:
+      - main
 
 permissions:
   id-token: write
-  contents: write
+  attestations: write
 jobs:
   build:
-    if: github.actor == 'marcelamelara'
+    if: "contains(github.event.commits[0].message, '[test]')"
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout
-      uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 #v4
+      uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 #v4.1.7
 
     - name: Build docker container
-      shell: bash
-      run: |
-        docker build --tag test_l1:latest --file build-container/test-buildenv-l1.dockerfile .
+      id: build
+      uses: actions/docker-build-push@5cd11c3a4ced054e52742c5fd54dca954e0edd85 #v6.7.0
+      with:
+        context: "."
+        file: "build-container/test-buildenv-l1.dockerfile"
+        tag: "test_l1:latest"
 
-    - name: Get client container image hash
-      id: hash
-      shell: bash
-      run: |
-        # this extracts the sha256 hash
-        echo "img-name=test_l1"
-        echo "img-hash=$(docker inspect test_l1 --format {{.ID}} | sed 's/.*://')"
-
-    #- name: Generate SLSA Provenance
-    #  uses: actions/attest-build-provenance@6149ea5740be74af77f260b9db67e633f6b0a9a1 #v1.4.2
-    #  with:
-    #    subject-name: 
+    - name: Generate SLSA Provenance
+      id: slsa
+      uses: actions/attest-build-provenance@6149ea5740be74af77f260b9db67e633f6b0a9a1 #v1.4.2
+       with:
+         subject-name: "test_l1"
+         subject-digest: ${{ steps.build.outputs.digest }}
