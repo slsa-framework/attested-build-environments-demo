@@ -18,15 +18,15 @@ jobs:
     - name: Build docker container
       shell: bash
       run: |
-        docker build --file build-container/test-buildenv-l1.dockerfile .
+        docker build --tag test_l1:latest --file build-container/test-buildenv-l1.dockerfile .
 
     - name: Get client container image hash
       id: hash
       shell: bash
       run: |
         # this extracts the sha256 hash
-        echo "img-name=test-buildenv-l1"
-        echo "img-hash=$(docker inspect test-buildenv-l1 --format {{.ID}} | sed 's/.*://')"
+        echo "img-name=test_l1"
+        echo "img-hash=$(docker inspect test_l1 --format {{.ID}} | sed 's/.*://')"
 
     #- name: Generate SLSA Provenance
     #  uses: actions/attest-build-provenance@6149ea5740be74af77f260b9db67e633f6b0a9a1 #v1.4.2
