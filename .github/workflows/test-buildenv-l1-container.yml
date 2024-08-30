@@ -1,0 +1,21 @@
+name: Test for BuildEnv L1 container build
+
+on:
+  workflow_dispatch
+
+permissions:
+  id-token: write
+  contents: write
+jobs:
+  ref-value:
+    if: github.actor == 'marcelamelara'
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 #v4
+
+    - name: Build docker container
+      shell: bash
+      run: |
+        docker build --file build-container/test-buildenv-l1.dockerfile .
