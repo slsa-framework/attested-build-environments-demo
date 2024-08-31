@@ -4,15 +4,20 @@ This is a PoC for the OpenSSF SLSA workstream
 [Hardware Attested Platforms](https://github.com/slsa-framework/slsa/issues/975).
 
 The CLI in this repo implements vTPM-based attestation and
-integrity checking of a Linux VM image.
+integrity checking of a Linux VM image. This repo also provides
+demo GHA workflows showcasing how to meet SLSA BuildEnv L1 and L2 (WIP).
 
 ## TODOs
 
-* Generate verifier VM attestation document
-* Add private key config and signing attestation document
+* Document verifier VM attestation flow
+* Document private key config and signing attestation
+* Merge CLI commands using cobra
 * Add binding attestation + signature for the job id
-* Verify ^ before run
-* Set up a self-hosted runner
+* Add build image components for container-based build
+* Add verification of SLSA Provenance + VSA generation
+* Add verification of "boot" in container-based build environment
+* Add mock build platform
+* Add mock L3 container-based build environment deployment with HW TPM
 
 ## How To Use
 ### Generate the initramfs
