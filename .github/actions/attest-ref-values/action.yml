@@ -1,0 +1,37 @@
+name: Attest Reference Values
+
+inputs:
+  reference-path:
+    description: >
+      The directory of the artifacts for which to generate reference value
+      attestations.
+      default: $GITHUB_WORKSPACE
+      required: false
+  save:
+    description: >
+      Flag indicating whether to save the signed attestations as a local
+      artifact (using actions/upload-artifact). Default is `save=true`.
+    required: false
+    default: 'true'
+
+outputs:
+  attestation-path:
+    description: 'The filename of the generated reference value attestation.'
+    value: ${{ steps.attest.outputs.report-name }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Generate reference value SCAI attestations
+      id: attest
+      shell: bash
+      run: |
+        ../scripts/gen-ref-values.sh ${{ inputs.reference-path }}
+
+    - name: Save the signed Sigstore bundles
+      id: upload
+      if: ${{ inputs.save == 'true' }}
+      uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32 # v3.1.3
+      with:
+        path: '${{ inputs.reference-path }}/*.scai.sigstore.json'
+        retention-days: 15
