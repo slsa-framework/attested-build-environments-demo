@@ -14,11 +14,6 @@ inputs:
     required: false
     default: 'true'
 
-outputs:
-  attestation-path:
-    description: 'The filename of the generated reference value attestation.'
-    value: ${{ steps.attest.outputs.report-name }}
-
 runs:
   using: 'composite'
   steps:
@@ -26,7 +21,7 @@ runs:
       id: attest
       shell: bash
       run: |
-        ../scripts/gen-ref-values.sh ${{ inputs.reference-path }}
+        scripts/gen-ref-values.sh ${{ inputs.reference-path }}
 
     - name: Save the signed Sigstore bundles
       id: upload
