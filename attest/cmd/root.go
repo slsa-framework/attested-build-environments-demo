@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"os"
@@ -8,12 +8,12 @@ import (
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "in-toto-attest",
-	Short: "A CLI tool for generating/verifying attestations about build environments",
+	Use:   "image-attestation",
+	Short: "A CLI tool for the SLSA Attested Build Environments track",
 }
 
 var (
-	outFile      string
+	outFile string
 )
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -25,9 +25,13 @@ func Execute() {
 	}
 }
 
+var debugLogging bool
+
 func init() {
-	rootCmd.AddCommand(generateCmd)
-	rootCmd.AddCommand(parseCmd)
+	rootCmd.AddCommand(quoteCmd)
+	rootCmd.AddCommand(verifyCmd)
+	//rootCmd.AddCommand(generateCmd)
+	//rootCmd.AddCommand(parseCmd)
 }
 
 func main() {

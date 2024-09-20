@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"encoding/pem"
@@ -20,7 +20,7 @@ var pubkeyCmd = &cobra.Command{
 	Use:   "pubkey",
 	Args:  cobra.ExactArgs(1),
 	Short: "Outputs the PEM-formatted public key contained in a Sigstore bundle body",
-	RunE: getPubKey,
+	RunE:  getPubKey,
 }
 
 func init() {
@@ -39,7 +39,7 @@ func getPubKey(_ *cobra.Command, args []string) error {
 	// read in the sigstore bundle file
 	bundleFile := args[0]
 	bundle := &sigbundle.Bundle{}
-	
+
 	err := fileio.ReadPbFromFile(bundleFile, bundle)
 	if err != nil {
 		return fmt.Errorf("failed to read Sigstore bundle file %s: %w", bundleFile, err)
@@ -56,19 +56,18 @@ func getPubKey(_ *cobra.Command, args []string) error {
 	}
 
 	block := &pem.Block{
-		Type: "CERTIFICATE",
+		Type:  "CERTIFICATE",
 		Bytes: certs[0].GetRawBytes(),
 	}
-	
+
 	encoded := pem.EncodeToMemory(block)
 	if encoded == nil {
 		return fmt.Errorf("failed to PEM-encode x509 certificate for Sigstore bundle %s", bundleFile)
 	}
 
-
 	if len(outFile) > 0 {
 		err = os.WriteFile(outFile, encoded, 0644)
-	} else{
+	} else {
 		fmt.Printf("Parsed: \n\n%s", string(encoded))
 		err = nil
 	}
