@@ -30,7 +30,7 @@ var debugLogging bool
 func init() {
 	rootCmd.AddCommand(quoteCmd)
 	rootCmd.AddCommand(verifyCmd)
-	//rootCmd.AddCommand(generateCmd)
+	rootCmd.AddCommand(refValuesCmd)
 	//rootCmd.AddCommand(parseCmd)
 }
 

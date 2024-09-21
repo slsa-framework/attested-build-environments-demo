@@ -12,22 +12,27 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-func NewRefValueStatement(subjects []*ita.ResourceDescriptor, attribute string, target *ita.ResourceDescriptor, evidencePath string, includeEvidence bool) (*ita.Statement, error) {
-	// generate the resource descriptor for the reference value evidence
-	ev, err := generators.NewRdForFile(evidencePath, "", "", "sha256", includeEvidence, "application/json", "someLocation", nil)
+func NewRefValueSCAIAssertion(attribute string, targetPath string, includeTargetContent bool) (*scai.AttributeAssertion, error) {
+	// generate the resource descriptor for the reference value target
+	target, err := generators.NewRdForFile(targetPath, "", "", "sha256", includeTargetContent, "", "", nil)
 	if err != nil {
-		return nil, fmt.Errorf("error generating resource descriptor for evidence: %w", err)
+		return nil, fmt.Errorf("error generating resource descriptor: %w", err)
 	}
 
 	// generate the SCAI assertion for the reference value
-	scaiAA, err := generators.NewSCAIAssertion(attribute, target, nil, ev)
+	scaiAA, err := generators.NewSCAIAssertion(attribute, target, nil, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error generating SCAI assertion: %w", err)
 	}
 
-	// generate the in-toto predicate (SCAI report)
+	return scaiAA, nil
+}
+
+func NewSCAIStatement(subject []*ita.ResourceDescriptor, attributeAssertions []*scai.AttributeAssertion, producer *ita.ResourceDescriptor) (*ita.Statement, error) {
+	// create the in-toto predicate (SCAI report)
 	scaiReport := &scai.AttributeReport{
-		Attributes: []*scai.AttributeAssertion{scaiAA},
+		Attributes: attributeAssertions,
+		Producer:   producer,
 	}
 
 	// plug the SCAI report into an in-toto Statement
@@ -44,5 +49,5 @@ func NewRefValueStatement(subjects []*ita.ResourceDescriptor, attribute string, 
 		return nil, fmt.Errorf("error unmarshalling SCAI report: %w", err)
 	}
 
-	return generators.NewStatement(subjects, "https://in-toto.io/attestation/scai/attribute-report/v0.2", reportStruct)
+	return generators.NewStatement(subject, "https://in-toto.io/attestation/scai/attribute-report/v0.2", reportStruct)
 }
