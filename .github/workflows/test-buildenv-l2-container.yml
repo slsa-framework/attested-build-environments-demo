@@ -1,0 +1,54 @@
+# yamllint disable rule:line-length
+name: Test for BuildEnv L2 container build
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'build-container/**'
+
+permissions:
+  id-token: write
+  attestations: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+
+      - name: Setup Go
+        uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491 #v5
+        with:
+          go-version: 1.22.x
+
+      - name: Install scai-gen CLI tools
+        shell: bash
+        run: |
+          go install github.com/in-toto/scai-demos/scai-gen@latest
+
+      # Per BuildEnv L2, MUST automatically generate and distribute
+      # signed reference values for the bootloader or equivalent, guest
+      # kernel, build platform client, build executor, and root filesystem.
+      - name: Attest container reference values
+        id: ref-values
+        uses: chkimes/image-attestation/.github/actions/attest-ref-values@main
+        with:
+          reference-path: 'build-container/*'
+
+      - name: Build docker container
+        id: build
+        uses: docker/build-push-action@5cd11c3a4ced054e52742c5fd54dca954e0edd85 # v6.7.0
+        with:
+          context: "."
+          file: "build-container/test-buildenv.dockerfile"
+          tags: "test_l2:latest"
+
+      - name: Generate SLSA Provenance
+        id: slsa
+        uses: actions/attest-build-provenance@6149ea5740be74af77f260b9db67e633f6b0a9a1 # v1.4.2
+        with:
+          subject-name: "test_l2"
+          subject-digest: ${{ steps.build.outputs.digest }}

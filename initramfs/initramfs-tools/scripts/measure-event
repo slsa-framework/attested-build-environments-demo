@@ -1,0 +1,8 @@
+#!/bin/sh
+
+EVENT="$1"
+
+mkdir -p /measurements
+echo "$EVENT" >> /measurements/eventlog
+
+echo -n "$EVENT" | tpm2_pcrevent 11

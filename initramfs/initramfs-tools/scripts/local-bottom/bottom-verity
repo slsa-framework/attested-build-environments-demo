@@ -1,0 +1,78 @@
+#!/bin/sh
+
+set -e
+
+PREREQ=""
+
+prereqs()
+{
+	echo "${PREREQ}"
+}
+
+case "${1}" in
+	prereqs)
+		prereqs
+		exit 0
+		;;
+esac
+
+for x in $(cat /proc/cmdline); do
+#for x in $(cat tmpcmdline); do
+        case ${x} in
+        verityname=*)
+                VERITYNAME=${x#*=}
+        ;;
+        overlaydev=*)
+                OVERLAYDEV=${x#*=}
+        ;;
+        esac
+done
+
+if [ -z "$VERITYNAME" ]; then
+    echo "Verity not configured. Bypassing overlay creation."
+    /scripts/measure-event "OVERLAY_BYPASS"
+    exit 0
+fi
+
+if [ ! -e "/dev/mapper/$verityname" ]; then
+    echo "Verity not setup. Bypassing overlay creation."
+    /scripts/measure-event "OVERLAY_BYPASS"
+    exit 0
+fi
+
+if [ -z "$OVERLAYDEV" ]; then
+    echo "Overlay settings incorrect! Must supply overlaydev"
+    /scripts/measure-event "OVERLAY_FAILURE"
+    exit 1
+fi
+
+# ignore whatever the initramfs scripts did
+echo Un-mounting existing /root
+umount /root
+
+echo Mounting verity device to /roroot
+mkdir -p /roroot
+mount "/dev/mapper/$verityname" /roroot
+
+# TODO: in a real implementation, encrypt the device
+
+echo Ensuring overlay device "$OVERLAYDEV" is ext4
+ret=0
+blkid "$OVERLAYDEV" | grep TYPE=\"ext4\" || ret=$?
+
+if [ $ret -ne 0 ]; then
+    echo "Overlay device is not ext4! Clobbering..."
+    mkfs.ext4 -F "$OVERLAYDEV"
+fi
+
+# create/mount our overlayfs work and upper directories
+mkdir -p /mnt/overlay
+mount -w "$OVERLAYDEV" /mnt/overlay
+mkdir -p /mnt/overlay/work
+mkdir -p /mnt/overlay/upper
+mount -t overlay overlay -o lowerdir=/roroot,workdir=/mnt/overlay/work,upperdir=/mnt/overlay/upper "${rootmnt?}"
+
+/scripts/measure-event "OVERLAY_SUCCESS"
+
+mkdir -p /root/measurements
+cp /measurements/eventlog /root/measurements
