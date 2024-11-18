@@ -54,7 +54,7 @@ jobs:
         path: img/*
 
     - name: Generate provenance
-      uses: github-early-access/generate-build-provenance@67d881a62db43e3a31b5d5fdc5454a540c7ea56e #main
+      uses: github-early-access/generate-build-provenance@5fb744556d7e95958990349de0ddb84909c219bb #main
       with:
         subject-path: img/*
     
