@@ -48,7 +48,7 @@ jobs:
 
       - name: Generate SLSA Provenance
         id: slsa
-        uses: actions/attest-build-provenance@6149ea5740be74af77f260b9db67e633f6b0a9a1 # v1.4.2
+        uses: actions/attest-build-provenance@ef244123eb79f2f7a7e75d99086184180e6d0018 # v1.4.4
         with:
           subject-name: "test_l2"
           subject-digest: ${{ steps.build.outputs.digest }}
