@@ -6,7 +6,7 @@ toolchain go1.23.3
 
 require (
 	github.com/google/go-tpm v0.9.1
-	github.com/in-toto/attestation v1.0.1
+	github.com/in-toto/attestation v1.1.0
 	github.com/in-toto/scai-demos v0.3.0
 	github.com/sigstore/protobuf-specs v0.3.2
 	github.com/spf13/cobra v1.8.0
