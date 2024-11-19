@@ -9,7 +9,7 @@ require (
 	github.com/in-toto/attestation v1.0.1
 	github.com/in-toto/scai-demos v0.3.0
 	github.com/sigstore/protobuf-specs v0.3.2
-	github.com/spf13/cobra v1.8.0
+	github.com/spf13/cobra v1.8.1
 	golang.org/x/exp v0.0.0-20241108190413-2d47ceb2692f
 	google.golang.org/protobuf v1.34.1
 )
