@@ -6,12 +6,12 @@ toolchain go1.23.3
 
 require (
 	github.com/google/go-tpm v0.9.1
-	github.com/in-toto/attestation v1.0.1
+	github.com/in-toto/attestation v1.1.1
 	github.com/in-toto/scai-demos v0.3.0
 	github.com/sigstore/protobuf-specs v0.3.2
 	github.com/spf13/cobra v1.8.0
 	golang.org/x/exp v0.0.0-20241108190413-2d47ceb2692f
-	google.golang.org/protobuf v1.34.1
+	google.golang.org/protobuf v1.36.3
 )
 
 require (
@@ -28,7 +28,7 @@ require (
 	github.com/sirupsen/logrus v1.9.3 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/stoewer/go-strcase v1.2.0 // indirect
-	github.com/stretchr/testify v1.9.0 // indirect
+	github.com/stretchr/testify v1.10.0 // indirect
 	golang.org/x/crypto v0.22.0 // indirect
 	golang.org/x/sys v0.19.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
