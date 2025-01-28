@@ -10,7 +10,7 @@ require (
 	github.com/in-toto/scai-demos v0.3.0
 	github.com/sigstore/protobuf-specs v0.3.2
 	github.com/spf13/cobra v1.8.0
-	golang.org/x/exp v0.0.0-20241108190413-2d47ceb2692f
+	golang.org/x/exp v0.0.0-20250106191152-7588d65b2ba8
 	google.golang.org/protobuf v1.36.3
 )
 
