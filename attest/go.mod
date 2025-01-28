@@ -5,7 +5,7 @@ go 1.22.0
 toolchain go1.23.5
 
 require (
-	github.com/google/go-tpm v0.9.1
+	github.com/google/go-tpm v0.9.3
 	github.com/in-toto/attestation v1.1.1
 	github.com/in-toto/scai-demos v0.3.0
 	github.com/sigstore/protobuf-specs v0.3.2
