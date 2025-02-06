@@ -11,7 +11,7 @@ require (
 	github.com/sigstore/protobuf-specs v0.3.2
 	github.com/spf13/cobra v1.8.1
 	golang.org/x/exp v0.0.0-20250106191152-7588d65b2ba8
-	google.golang.org/protobuf v1.36.3
+	google.golang.org/protobuf v1.36.5
 )
 
 require (
