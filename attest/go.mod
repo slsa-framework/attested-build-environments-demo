@@ -1,8 +1,8 @@
 module github.com/chkimes/image-attestation
 
-go 1.22.0
+go 1.23.0
 
-toolchain go1.23.5
+toolchain go1.24.0
 
 require (
 	github.com/google/go-tpm v0.9.3
@@ -10,7 +10,7 @@ require (
 	github.com/in-toto/scai-demos v0.3.0
 	github.com/sigstore/protobuf-specs v0.3.2
 	github.com/spf13/cobra v1.8.1
-	golang.org/x/exp v0.0.0-20250106191152-7588d65b2ba8
+	golang.org/x/exp v0.0.0-20250218142911-aa4b98e5adaa
 	google.golang.org/protobuf v1.36.3
 )
 
