@@ -2,7 +2,7 @@ module github.com/chkimes/image-attestation
 
 go 1.22.0
 
-toolchain go1.23.5
+toolchain go1.24.1
 
 require (
 	github.com/google/go-tpm v0.9.3
