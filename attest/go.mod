@@ -9,7 +9,7 @@ require (
 	github.com/in-toto/attestation v1.1.1
 	github.com/in-toto/scai-demos v0.3.0
 	github.com/sigstore/protobuf-specs v0.4.0
-	github.com/spf13/cobra v1.8.1
+	github.com/spf13/cobra v1.9.1
 	golang.org/x/exp v0.0.0-20250305212735-054e65f0b394
 	google.golang.org/protobuf v1.36.5
 )
@@ -26,7 +26,7 @@ require (
 	github.com/secure-systems-lab/go-securesystemslib v0.8.0 // indirect
 	github.com/shibumi/go-pathspec v1.3.0 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
-	github.com/spf13/pflag v1.0.5 // indirect
+	github.com/spf13/pflag v1.0.6 // indirect
 	github.com/stoewer/go-strcase v1.2.0 // indirect
 	github.com/stretchr/testify v1.10.0 // indirect
 	golang.org/x/crypto v0.22.0 // indirect
