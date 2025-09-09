@@ -11,6 +11,23 @@ fi
 az account set --subscription $AZURE_SUBSCRIPTION_ID
 az group create --resource-group $AZURE_RESOURCE_GROUP --location $AZURE_LOCATION
 
+echo "Creating gallery..."
+GALLERY="$AZURE_VM_NAME-sig"
+az sig create --resource-group $AZURE_RESOURCE_GROUP \
+              --gallery-name $GALLERY
+
+echo "Creating image definition..."
+IMAGE="$AZURE_VM_NAME-image"
+az sig image-definition create --resource-group $AZURE_RESOURCE_GROUP \
+                               --gallery-name $GALLERY \
+                               --gallery-image-definition $IMAGE \
+                               --os-state Specialized \
+                               --os-type Linux \
+                               --features SecurityType=TrustedLaunch \
+                               --publisher DemoPublisher' \
+                               --offer DemoOffer' \
+                               --sku DemoSku
+
 echo "Creating VM..."
 az vm create --resource-group $AZURE_RESOURCE_GROUP \
              --name $AZURE_VM_NAME \
@@ -58,3 +75,12 @@ scp    -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa "$SCRIPTPATH/image-attestati
 echo "Building VM image..."
 ssh    -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa azureuser@$IP_ADDR "sudo scripts/build-linux-vm.sh"
 scp    -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa azureuser@$IP_ADDR:~/scripts/image.tar.gz .
+
+echo "Creating image version..."
+VERSION="0.0.${{ github.run_id }}"
+VM_ID=$(az vm show --name $AZURE_VM_NAME --resource-group $AZURE_RESOURCE_GROUP --query id -o tsv)
+az sig image-version create --resource-group $AZURE_RESOURCE_GROUP \
+                            --gallery-name $GALLERY \
+                            --gallery-image-definition $IMAGE \
+                            --gallery-image-version $VERSION \
+                            --virtual-machine $VM_ID
