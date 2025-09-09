@@ -12,12 +12,12 @@ az account set --subscription $AZURE_SUBSCRIPTION_ID
 az group create --resource-group $AZURE_RESOURCE_GROUP --location $AZURE_LOCATION
 
 echo "Creating gallery..."
-GALLERY="$AZURE_VM_NAME_sig"
+GALLERY="${AZURE_VM_NAME}_sig"
 az sig create --resource-group $AZURE_RESOURCE_GROUP \
               --gallery-name $GALLERY
 
 echo "Creating image definition..."
-IMAGE="$AZURE_VM_NAME_image"
+IMAGE="${AZURE_VM_NAME}_image"
 az sig image-definition create --resource-group $AZURE_RESOURCE_GROUP \
                                --gallery-name $GALLERY \
                                --gallery-image-definition $IMAGE \
