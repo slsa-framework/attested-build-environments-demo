@@ -40,6 +40,7 @@ jobs:
         AZURE_RESOURCE_GROUP: ${{ secrets.AZURE_RESOURCE_GROUP }}
         AZURE_LOCATION: ${{ secrets.AZURE_LOCATION }}
         AZURE_VM_NAME: ${{ secrets.AZURE_VM_NAME }}
+        IMAGE_VERSION: 0.0.${{ github.run_id }}
       run: |
         set -e
 
