@@ -42,7 +42,7 @@ jobs:
         AZURE_VM_NAME: ${{ secrets.AZURE_VM_NAME }}
         AZURE_GALLERY_NAME: ${{ secrets.AZURE_VM_NAME }}_sig
         AZURE_IMAGE_DEFINITION: ${{ secrets.AZURE_VM_NAME }}_image
-        AZURE_IMAGE_VERSION: 0.0.${{ github.run_id }}
+        AZURE_IMAGE_VERSION: 0.0.${{ github.run_number }}
       run: |
         set -e
 
