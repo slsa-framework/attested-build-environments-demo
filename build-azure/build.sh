@@ -12,15 +12,13 @@ az account set --subscription $AZURE_SUBSCRIPTION_ID
 az group create --resource-group $AZURE_RESOURCE_GROUP --location $AZURE_LOCATION
 
 echo "Creating gallery..."
-GALLERY="${AZURE_VM_NAME}_sig"
 az sig create --resource-group $AZURE_RESOURCE_GROUP \
-              --gallery-name $GALLERY
+              --gallery-name $AZURE_GALLERY_NAME
 
 echo "Creating image definition..."
-IMAGE="${AZURE_VM_NAME}_image"
 az sig image-definition create --resource-group $AZURE_RESOURCE_GROUP \
-                               --gallery-name $GALLERY \
-                               --gallery-image-definition $IMAGE \
+                               --gallery-name $AZURE_GALLERY_NAME \
+                               --gallery-image-definition $AZURE_IMAGE_DEFINITION \
                                --os-state Specialized \
                                --os-type Linux \
                                --features SecurityType=TrustedLaunch \
@@ -77,10 +75,9 @@ ssh    -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa azureuser@$IP_ADDR "sudo scr
 scp    -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa azureuser@$IP_ADDR:~/scripts/image.tar.gz .
 
 echo "Creating image version..."
-VERSION="0.0.${{ github.run_id }}"
 VM_ID=$(az vm show --name $AZURE_VM_NAME --resource-group $AZURE_RESOURCE_GROUP --query id -o tsv)
 az sig image-version create --resource-group $AZURE_RESOURCE_GROUP \
-                            --gallery-name $GALLERY \
-                            --gallery-image-definition $IMAGE \
-                            --gallery-image-version $VERSION \
+                            --gallery-name $AZURE_GALLERY_NAME \
+                            --gallery-image-definition $AZURE_IMAGE_DEFINITION \
+                            --gallery-image-version $AZURE_IMAGE_VERSION \
                             --virtual-machine $VM_ID
