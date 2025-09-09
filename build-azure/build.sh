@@ -24,8 +24,8 @@ az sig image-definition create --resource-group $AZURE_RESOURCE_GROUP \
                                --os-state Specialized \
                                --os-type Linux \
                                --features SecurityType=TrustedLaunch \
-                               --publisher DemoPublisher' \
-                               --offer DemoOffer' \
+                               --publisher DemoPublisher \
+                               --offer DemoOffer \
                                --sku DemoSku
 
 echo "Creating VM..."
