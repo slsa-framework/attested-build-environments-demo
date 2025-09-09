@@ -40,7 +40,7 @@ az vm create --resource-group $AZURE_RESOURCE_GROUP \
 
 cleanup() {
     echo "Cleaning up..."
-    az vm delete --resource-group $AZURE_RESOURCE_GROUP --name $AZURE_VM_NAME --yes
+    #az vm delete --resource-group $AZURE_RESOURCE_GROUP --name $AZURE_VM_NAME --yes
     rm -f create.log
 }
 
