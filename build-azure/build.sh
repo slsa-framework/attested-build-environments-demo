@@ -26,7 +26,7 @@ az sig image-definition create --resource-group $AZURE_RESOURCE_GROUP \
                                --offer DemoOffer \
                                --sku DemoSku
 
-echo "Creating VM..."
+echo "Creating image VM..."
 az vm create --resource-group $AZURE_RESOURCE_GROUP \
              --name $AZURE_VM_NAME \
              --image Canonical:0001-com-ubuntu-server-jammy:22_04-lts-gen2:latest \
@@ -35,18 +35,19 @@ az vm create --resource-group $AZURE_RESOURCE_GROUP \
              --ssh-key-value ~/.ssh/id_rsa.pub \
              --security-type TrustedLaunch \
              --nic-delete-option delete \
-             --os-disk-delete-option delete \
+             --os-disk-delete-option detach \
              --patch-mode ImageDefault \
              | tee create.log
 
 cleanup() {
     echo "Cleaning up..."
-    #az vm delete --resource-group $AZURE_RESOURCE_GROUP --name $AZURE_VM_NAME --yes
+    az vm delete --resource-group $AZURE_RESOURCE_GROUP --name $AZURE_VM_NAME --yes
     rm -f create.log
 }
 
 trap 'cleanup' EXIT
 
+# TODO a better way is to look it up with az cli
 IP_ADDR=$(cat create.log | jq -r .publicIpAddress | tail -n 1)
 echo "VM created with IP address: $IP_ADDR"
 
@@ -66,6 +67,9 @@ if [ $count -eq $MAX_RETRIES ]; then
     exit 1
 fi
 
+DISK_ID=$(az vm show --resource-group $AZURE_RESOURCE_GROUP --name $AZURE_VM_NAME | jq -r ".storageProfile.osDisk.managedDisk.id")
+echo "VM created with OS disk id: $DISK_ID"
+
 echo "Copying files to VM..."
 scp -r -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa "$SCRIPTPATH/../initramfs" azureuser@$IP_ADDR:
 scp -r -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa "$SCRIPTPATH/../scripts"  azureuser@$IP_ADDR:
@@ -75,6 +79,27 @@ echo "Building VM image..."
 ssh    -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa azureuser@$IP_ADDR "sudo scripts/build-linux-vm.sh"
 scp    -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa azureuser@$IP_ADDR:~/scripts/image.tar.gz .
 
+
+echo "Deleting VM..."
+# Deleting VM preserves OS disk
+az vm delete --resource-group $AZURE_RESOURCE_GROUP --name $AZURE_VM_NAME --yes
+
+echo "Creating builder VM..."
+AZURE_BUILDER_RESOURCE_GROUP="${AZURE_RESOURCE_GROUP}builder"
+AZURE_BUILDER_VM_NAME="${AZURE_VM_NAME}builder"
+
+az group create --resource-group $AZURE_BUILDER_RESOURCE_GROUP --location $AZURE_LOCATION
+az vm create --resource-group $AZURE_BUILDER_RESOURCE_GROUP \
+             --name $AZURE_BUILDER_VM_NAME \
+             --image Canonical:0001-com-ubuntu-server-jammy:22_04-lts-gen2:latest \
+             --size Standard_D4ds_v5 \
+             --admin-username azureuser \
+             --ssh-key-value ~/.ssh/id_rsa.pub \
+             --security-type TrustedLaunch \
+             --nic-delete-option delete \
+             --os-disk-delete-option delete \
+             --patch-mode ImageDefault \
+             | tee create.log
 echo "Creating image version..."
 VM_ID=$(az vm show --name $AZURE_VM_NAME --resource-group $AZURE_RESOURCE_GROUP --query id -o tsv)
 az sig image-version create --resource-group $AZURE_RESOURCE_GROUP \
