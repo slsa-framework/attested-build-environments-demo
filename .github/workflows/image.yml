@@ -30,7 +30,10 @@ jobs:
 
     - name: Publish image attestation tool
       run: |
-        oras push ghcr.io/paveliak/image-attestation:latest ./attest/image_attestation
+        pwd
+        ls -al
+        ls -al ./attest
+        oras push ghcr.io/paveliak/image-attestation:latest ./attest/image-attestation
 
   image:
     needs: prep
