@@ -26,9 +26,9 @@ echo Remove apt postinstall steps that impact the boot flow
 rm /etc/kernel/postinst.d/zz-update-grub
 rm /etc/kernel/postinst.d/initramfs-tools
 
-#echo Copying attestation utilities to sbin
-#chmod +x image-attestation
-#cp image-attestation /usr/sbin/image-attestation
+echo Copying attestation utilities to sbin
+chmod +x image-attestation
+cp image-attestation /usr/sbin/image-attestation
 
 echo Measuring rootfs
 "$SCRIPTPATH"/rootfs-measure-verity.sh

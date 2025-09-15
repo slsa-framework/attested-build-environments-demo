@@ -12,7 +12,6 @@ jobs:
   prep:
     runs-on: ubuntu-latest
     steps:
-#    - uses: oras-project/setup-oras@22ce207df3b08e061f537244349aac6ae1d214f6 # 1.2.4
 
     - name: Checkout
       uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v4
@@ -26,16 +25,13 @@ jobs:
       run: |
         cd attest
         go get ./...
-        go build -o . ./...
+        go build -o ../build-azure ./...
 
-#    - name: Publish image attestation tool
-#      run: |
-#        oras push -u ${{ github.actor }} -p ${{ github.token }} ghcr.io/${{ github.repository }}/image-attestation:latest ./attest/image-attestation
     - name: Upload image attestation tool
       uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
       with:
         name: image-attestation
-        path: attest/image-attestation
+        path: build-azure/image-attestation
 
   image:
     needs: prep
@@ -46,14 +42,11 @@ jobs:
     - name: Checkout
       uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v4
 
-#    - uses: oras-project/setup-oras@22ce207df3b08e061f537244349aac6ae1d214f6 # 1.2.4
     - name: Download image attestation tool
       uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
       with:
         name: image-attestation
-        path: attest/image-attestation
-
-    - run: ls -al ./attest/image-attestation
+        path: build-azure/image-attestation
 
     - name: Login to Azure
       uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5 # v2
