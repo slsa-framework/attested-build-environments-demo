@@ -32,7 +32,7 @@ jobs:
       run: |
         ls -al ./attest/image-attestation
         # ${{ github.repository }}
-        oras push -u ${{ github.actor }} -p $GITHUB_TOKEN ghcr.io/paveliak/image-attestation:latest ./attest/image-attestation
+        oras push -u ${{ github.actor }} -p ${{ github.token }} ghcr.io/${{ github.repository }}/image-attestation:latest ./attest/image-attestation
 
   image:
     needs: prep
