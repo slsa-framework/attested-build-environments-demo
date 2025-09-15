@@ -30,7 +30,9 @@ jobs:
 
     - name: Publish image attestation tool
       run: |
-        oras push -u ${{ github.actor }} -p $GITHUB_TOKEN ghcr.io/${{ github.repository }}/image-attestation:latest ./attest/image-attestation
+        ls -al ./attest/image-attestation
+        # ${{ github.repository }}
+        oras push -u ${{ github.actor }} -p $GITHUB_TOKEN ghcr.io/paveliak/image-attestation:latest ./attest/image-attestation
 
   image:
     needs: prep
