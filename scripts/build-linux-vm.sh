@@ -9,14 +9,11 @@ if [ "$EUID" -ne 0 ]
   exit
 fi
 
-VM_USER="${VM_USER:-azureuser}"
-SSH_KEYS_URL="${SSH_KEYS_URL:-https://github.com/paveliak.keys}"
-
-echo Installing software necessary for image build
-apt-get update
-apt-get install -y rsync
+VM_USER="${AZURE_USER_NAME:-azureuser}"
+SSH_KEYS_URL="${SSH_KEYS_URL:-https://github.com/$VM_USER.keys}"
 
 echo Installing software desired for the eventual image
+apt-get update
 apt-get install -y golang tpm2-tools
 
 echo Setting public keys
@@ -29,9 +26,9 @@ echo Remove apt postinstall steps that impact the boot flow
 rm /etc/kernel/postinst.d/zz-update-grub
 rm /etc/kernel/postinst.d/initramfs-tools
 
-echo Copying attestation utilities to sbin
-chmod +x image-attestation
-cp image-attestation /usr/sbin/image-attestation
+#echo Copying attestation utilities to sbin
+#chmod +x image-attestation
+#cp image-attestation /usr/sbin/image-attestation
 
 echo Measuring rootfs
 "$SCRIPTPATH"/rootfs-measure-verity.sh

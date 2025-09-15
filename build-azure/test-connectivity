@@ -1,0 +1,24 @@
+#!/bin/bash
+
+set -e
+
+IP_ADDR=$1
+VM_USER="${AZURE_USER_NAME:-azureuser}"
+
+echo "Making sure we can connect to the VM using IP $IP_ADDR..."
+MAX_RETRIES=10
+RETRY_DELAY=10
+count=0
+while [ $count -lt $MAX_RETRIES ]; do
+    ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa "${VM_USER}@${IP_ADDR}" "uname -a" && break
+    count=$((count + 1))
+    echo "Retry $count/$MAX_RETRIES failed. Waiting $RETRY_DELAY seconds before next attempt..."
+    sleep $RETRY_DELAY
+done
+
+if [ $count -eq $MAX_RETRIES ]; then
+    echo "All $MAX_RETRIES attempts failed."
+    exit 1
+fi
+
+echo "$IP_ADDR is reachable for SSH!"
