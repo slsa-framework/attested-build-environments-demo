@@ -1,0 +1,11 @@
+#!/bin/bash
+
+set -e
+
+DISK_ID=$1
+
+az sig image-version create --resource-group $AZURE_RESOURCE_GROUP \
+                            --gallery-name $AZURE_GALLERY_NAME \
+                            --gallery-image-definition $AZURE_IMAGE_DEFINITION \
+                            --gallery-image-version $AZURE_IMAGE_VERSION \
+                            --os-snapshot $DISK_ID

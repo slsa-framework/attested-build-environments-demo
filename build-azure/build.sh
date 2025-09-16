@@ -5,6 +5,13 @@ set -e
 SCRIPTPATH="$( cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P )"
 VM_USER="${AZURE_USER_NAME:-azureuser}"
 
+echo "Creating resource group..."
+az account set --subscription $AZURE_SUBSCRIPTION_ID
+az group create --resource-group $AZURE_RESOURCE_GROUP --location $AZURE_LOCATION
+
+echo "Creating image gallery..."
+$SCRIPTPATH/create-gallery
+
 echo "Creating image VM..."
 IMAGE_VM_NAME="${AZURE_VM_NAME}image"
 $SCRIPTPATH/create-vm $IMAGE_VM_NAME
@@ -46,3 +53,6 @@ ssh    -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa "${VM_USER}@${IP_ADDR}" "sud
 
 echo "Deallocating hasher VM"
 az vm deallocate --id $HASHER_VM_ID
+
+echo "Creating image version ..."
+$SCRIPTPATH/create-image $DISK_ID
