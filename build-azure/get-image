@@ -1,0 +1,7 @@
+#!/bin/bash
+
+set -e
+
+IMAGE_RESOURCE=$(az sig image-definition show --resource-group $AZURE_RESOURCE_GROUP --gallery-name $AZURE_GALLERY_NAME --gallery-image-name $AZURE_IMAGE_DEFINITION | jq -r ".id")
+
+echo $IMAGE_RESOURCE

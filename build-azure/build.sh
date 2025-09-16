@@ -4,6 +4,7 @@ set -e
 
 SCRIPTPATH="$( cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P )"
 VM_USER="${AZURE_USER_NAME:-azureuser}"
+VM_IMAGE="Canonical:0001-com-ubuntu-server-jammy:22_04-lts-gen2:latest"
 
 echo "Creating resource group..."
 az account set --subscription $AZURE_SUBSCRIPTION_ID
@@ -14,7 +15,7 @@ $SCRIPTPATH/create-gallery
 
 echo "Creating image VM..."
 IMAGE_VM_NAME="${AZURE_VM_NAME}image"
-$SCRIPTPATH/create-vm $IMAGE_VM_NAME
+$SCRIPTPATH/create-vm $IMAGE_VM_NAME $VM_IMAGE
 IMAGE_VM_ID=$(az vm show --resource-group $AZURE_RESOURCE_GROUP --name $IMAGE_VM_NAME | jq -r ".id")
 IP_ADDR=$($SCRIPTPATH/get-ip $IMAGE_VM_ID)
 $SCRIPTPATH/test-connectivity $IP_ADDR
@@ -34,7 +35,7 @@ az vm delete --id $IMAGE_VM_ID --yes
 
 echo "Creating hasher VM..."
 HASHER_VM_NAME="${AZURE_VM_NAME}hash"
-$SCRIPTPATH/create-vm $HASHER_VM_NAME
+$SCRIPTPATH/create-vm $HASHER_VM_NAME $VM_IMAGE
 HASHER_VM_ID=$(az vm show --resource-group $AZURE_RESOURCE_GROUP --name $HASHER_VM_NAME | jq -r ".id")
 IP_ADDR=$($SCRIPTPATH/get-ip $HASHER_VM_ID)
 $SCRIPTPATH/test-connectivity $IP_ADDR

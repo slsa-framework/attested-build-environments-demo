@@ -11,8 +11,8 @@ permissions:
 jobs:
   prep:
     runs-on: ubuntu-latest
-    steps:
 
+    steps:
     - name: Checkout
       uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v4
 
@@ -83,3 +83,32 @@ jobs:
       with:
         subject-path: img/*
     
+  attest:
+    needs: [prep, image]
+    if: github.actor == 'paveliak'
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v4
+
+    - name: Login to Azure
+      uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5 # v2
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+    - name: Attesting Azure VM
+      env:
+        AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        AZURE_RESOURCE_GROUP: ${{ secrets.AZURE_RESOURCE_GROUP }}
+        AZURE_LOCATION: ${{ secrets.AZURE_LOCATION }}
+        AZURE_VM_NAME: ${{ secrets.AZURE_VM_NAME }}
+        AZURE_GALLERY_NAME: ${{ secrets.AZURE_VM_NAME }}_sig
+        AZURE_IMAGE_DEFINITION: ${{ secrets.AZURE_VM_NAME }}_image
+        AZURE_IMAGE_VERSION: 0.0.${{ github.run_number }}
+      run: |
+        set -e
+
+        build-azure/attest.sh
