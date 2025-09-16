@@ -30,9 +30,6 @@ echo Copying attestation utilities to sbin
 chmod +x image-attestation
 cp image-attestation /usr/sbin/image-attestation
 
-echo Measuring rootfs
-"$SCRIPTPATH"/rootfs-measure-verity.sh
-
 echo Installing enlightened initramfs scripts and generate initramfs
 TMP_DRIVE_PATH=$(mktemp -d)
 "$SCRIPTPATH"/../initramfs/install.sh
