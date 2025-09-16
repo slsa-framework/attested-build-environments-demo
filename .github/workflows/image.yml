@@ -35,7 +35,6 @@ jobs:
 
   image:
     needs: prep
-    if: github.actor == 'paveliak'
     runs-on: ubuntu-latest
 
     steps:
@@ -61,6 +60,7 @@ jobs:
         AZURE_RESOURCE_GROUP: ${{ secrets.AZURE_RESOURCE_GROUP }}
         AZURE_LOCATION: ${{ secrets.AZURE_LOCATION }}
         AZURE_VM_NAME: ${{ secrets.AZURE_VM_NAME }}
+        AZURE_VM_USER: ${{ github.actor }}
         AZURE_GALLERY_NAME: ${{ secrets.AZURE_VM_NAME }}_sig
         AZURE_IMAGE_DEFINITION: ${{ secrets.AZURE_VM_NAME }}_image
         AZURE_IMAGE_VERSION: 0.0.${{ github.run_number }}
@@ -85,7 +85,6 @@ jobs:
     
   attest:
     needs: [prep, image]
-    if: github.actor == 'paveliak'
     runs-on: ubuntu-latest
 
     steps:
@@ -105,6 +104,7 @@ jobs:
         AZURE_RESOURCE_GROUP: ${{ secrets.AZURE_RESOURCE_GROUP }}
         AZURE_LOCATION: ${{ secrets.AZURE_LOCATION }}
         AZURE_VM_NAME: ${{ secrets.AZURE_VM_NAME }}
+        AZURE_VM_USER: ${{ github.actor }}
         AZURE_GALLERY_NAME: ${{ secrets.AZURE_VM_NAME }}_sig
         AZURE_IMAGE_DEFINITION: ${{ secrets.AZURE_VM_NAME }}_image
         AZURE_IMAGE_VERSION: 0.0.${{ github.run_number }}
