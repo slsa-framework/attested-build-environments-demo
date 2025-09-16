@@ -3,20 +3,27 @@
 set -e
 
 VM_NAME=$1
-VM_IMAGE=$2
-VM_USER="${AZURE_USER_NAME:-azureuser}"
+VM_IMAGE=${2:-Canonical:0001-com-ubuntu-server-jammy:22_04-lts-gen2:latest}
+VM_USER=${AZURE_USER_NAME:-azureuser}
 
 if ! [ -f ~/.ssh/id_rsa ]; then
     ssh-keygen -t rsa -b 2048 -f ~/.ssh/id_rsa -N ""
+fi
+
+if [ -z "$2" ]; then
+   echo "Assuming generalized image"
+   VM_EXTRA_ARGS="--admin-username $VM_USER --ssh-key-value ~/.ssh/id_rsa.pub"
+else
+   echo "Assuming specialized image" 
+   VM_EXTRA_ARGS="--specialized"
 fi
 
 az vm create --resource-group $AZURE_RESOURCE_GROUP \
              --name $VM_NAME \
              --image $VM_IMAGE \
              --size Standard_D4ds_v5 \
-             --admin-username $VM_USER \
-             --ssh-key-value ~/.ssh/id_rsa.pub \
              --security-type TrustedLaunch \
              --nic-delete-option delete \
              --os-disk-delete-option detach \
-             --patch-mode ImageDefault
+             --patch-mode ImageDefault \
+             $VM_EXTRA_ARGS
