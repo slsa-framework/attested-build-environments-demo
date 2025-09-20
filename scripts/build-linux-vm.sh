@@ -9,7 +9,7 @@ if [ "$EUID" -ne 0 ]
   exit
 fi
 
-VM_USER="${AZURE_USER_NAME:-azureuser}"
+VM_USER="${AZURE_VM_USER:-azureuser}"
 SSH_KEYS_URL="${SSH_KEYS_URL:-https://github.com/$VM_USER.keys}"
 
 echo Installing software desired for the eventual image

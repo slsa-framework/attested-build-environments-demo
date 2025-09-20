@@ -3,7 +3,7 @@
 set -e
 
 IP_ADDR=$1
-VM_USER="${AZURE_USER_NAME:-azureuser}"
+VM_USER="${AZURE_VM_USER:-azureuser}"
 
 echo "Making sure we can connect to the VM using IP $IP_ADDR..."
 MAX_RETRIES=10
