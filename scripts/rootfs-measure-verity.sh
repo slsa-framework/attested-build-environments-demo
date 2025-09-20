@@ -4,7 +4,6 @@ set -e
 
 # TODO: pass it into this script as parameter
 LUN_ID="0"
-UEFI_DEVICE="/dev/disk/azure/scsi1/lun${LUN_ID}-part15"
 # TODO: Look it up by 'cloudimg-rootfs' partition label
 ROOTFS_DEVICE="/dev/disk/azure/scsi1/lun${LUN_ID}-part1"
 # TODO: Look it up by 'verity-device' GPT partition name
