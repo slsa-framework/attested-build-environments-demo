@@ -21,6 +21,8 @@ mkdir -p /home/$VM_USER/.ssh
 touch /home/$VM_USER/.ssh/authorized_keys
 curl $SSH_KEYS_URL >> /home/$VM_USER/.ssh/authorized_keys
 chown -R $VM_USER:$VM_USER /home/$VM_USER/.ssh
+chmod 700 /home/$VM_USER/.ssh
+chmod 600 /home/$VM_USER/.ssh/authorized_keys
 
 echo Remove apt postinstall steps that impact the boot flow
 rm /etc/kernel/postinst.d/zz-update-grub

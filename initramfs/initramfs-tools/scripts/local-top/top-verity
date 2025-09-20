@@ -16,6 +16,24 @@ case "${1}" in
 		;;
 esac
 
+if [ -e "/boot/efi/verity/fs.hash" ]; then
+        FSHASH=$(cat /boot/efi/verity/fs.hash)
+        echo "FS HASH $FSHASH"
+fi
+
+if [ -e "/boot/efi/verity/fs.uuid" ]; then
+        FSUUID=$(cat /boot/efi/verity/fs.uuid)
+        echo "FS UUID $FSUUID"
+fi
+
+if [ -e "/boot/efi/verity/veritu.uuid" ]; then
+        VERUUID=$(cat /boot/efi/verity/verity.uuid)
+        echo "VERITY UUID $VERUUID"
+fi
+
+ALL_DEVICES=$(ls /dev/disk/by-uuid)
+echo $ALL_DEVICES
+
 for x in $(cat /proc/cmdline); do
 #for x in $(cat tmpcmdline); do
         case ${x} in
