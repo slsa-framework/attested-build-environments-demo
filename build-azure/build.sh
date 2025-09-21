@@ -3,7 +3,7 @@
 set -e
 
 SCRIPTPATH="$( cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P )"
-VM_USER="${AZURE_USER_NAME:-azureuser}"
+VM_USER="${AZURE_VM_USER:-azureuser}"
 
 echo "Creating resource group..."
 az account set --subscription $AZURE_SUBSCRIPTION_ID
