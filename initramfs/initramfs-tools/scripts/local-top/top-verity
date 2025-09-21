@@ -16,6 +16,11 @@ case "${1}" in
 		;;
 esac
 
+echo "Reading verity configuration"
+ls -al /boot/efi
+mkdir -p /boot/efi
+mount -t vfat -o ro /dev/disk/by-label/UEFI /boot/efi
+
 if [ -e "/boot/efi/verity/rootfs.uuid" ]; then
         UUID=$(cat /boot/efi/verity/rootfs.uuid)
         VERITYDATADEV=/dev/disk/by-uuid/${UUID}
@@ -37,6 +42,8 @@ if [ -e "/boot/efi/verity/verity.name" ]; then
         VERITYNAME=$(cat /boot/efi/verity/verity.name)
         echo "VERITYNAME $VERITYNAME"
 fi
+
+umount /boot/efi
 
 SETTINGS_COUNT=0
 if [ -n "$VERITYDATADEV" ]; then
