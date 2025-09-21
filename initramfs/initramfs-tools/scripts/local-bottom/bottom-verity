@@ -16,17 +16,10 @@ case "${1}" in
 		;;
 esac
 
-for x in $(cat /proc/cmdline); do
-#for x in $(cat tmpcmdline); do
-        case ${x} in
-        verityname=*)
-                VERITYNAME=${x#*=}
-        ;;
-        overlaydev=*)
-                OVERLAYDEV=${x#*=}
-        ;;
-        esac
-done
+if [ -e "/boot/efi/verity/verity.name" ]; then
+    VERITYNAME=$(cat /boot/efi/verity/verity.name)
+    echo "VERITYNAME $VERITYNAME"
+fi
 
 if [ -z "$VERITYNAME" ]; then
     echo "Verity not configured. Bypassing overlay creation."
@@ -34,11 +27,15 @@ if [ -z "$VERITYNAME" ]; then
     exit 0
 fi
 
-if [ ! -e "/dev/mapper/$verityname" ]; then
+if [ ! -e "/dev/mapper/$VERITYNAME" ]; then
     echo "Verity not setup. Bypassing overlay creation."
     /scripts/measure-event "OVERLAY_BYPASS"
     exit 0
 fi
+
+#TEMP
+echo "All looks good with verity"
+exit 0
 
 if [ -z "$OVERLAYDEV" ]; then
     echo "Overlay settings incorrect! Must supply overlaydev"

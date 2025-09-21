@@ -16,67 +16,27 @@ case "${1}" in
 		;;
 esac
 
-if [ -e "/boot/efi/verity/fs.hash" ]; then
-        FSHASH=$(cat /boot/efi/verity/fs.hash)
-        echo "FS HASH $FSHASH"
+if [ -e "/boot/efi/verity/rootfs.uuid" ]; then
+        UUID=$(cat /boot/efi/verity/rootfs.uuid)
+        VERITYDATADEV=/dev/disk/by-uuid/${UUID}
+        echo "VERITYDATADEV $VERITYDATADEV"
 fi
 
-if [ -e "/boot/efi/verity/fs.uuid" ]; then
-        FSUUID=$(cat /boot/efi/verity/fs.uuid)
-        echo "FS UUID $FSUUID"
+if [ -e "/boot/efi/verity/verityfs.uuid" ]; then
+        UUID=$(cat /boot/efi/verity/verityfs.uuid)
+        VERITYTREEDEV=/dev/disk/by-uuid/${UUID}
+        echo "VERITYTREEDEV $VERITYTREEDEV"
 fi
 
-if [ -e "/boot/efi/verity/veritu.uuid" ]; then
-        VERUUID=$(cat /boot/efi/verity/verity.uuid)
-        echo "VERITY UUID $VERUUID"
+if [ -e "/boot/efi/verity/rootfs.hash" ]; then
+        VERITYHASH=$(cat /boot/efi/verity/rootfs.hash)
+        echo "VERITYHASH $VERITYHASH"
 fi
 
-ALL_DEVICES=$(ls /dev/disk/by-uuid)
-echo $ALL_DEVICES
-
-for x in $(cat /proc/cmdline); do
-#for x in $(cat tmpcmdline); do
-        case ${x} in
-        veritydata=*)
-                value=${x#*=}
-
-                # Find the device node path depending on the form of veritydata= :
-                case ${value} in
-                UUID=*)
-                        VERITYDATADEV=/dev/disk/by-uuid/${value#UUID=}
-                        ;;
-                LABEL=*)
-                        VERITYDATADEV=/dev/disk/by-label/${value#LABEL=}
-                        ;;
-                *)
-                        VERITYDATADEV=${value}
-                        ;;
-                esac
-        ;;
-        veritytree=*)
-                value=${x#*=}
-
-                # Find the device node path depending on the form of veritytree= :
-                case ${value} in
-                UUID=*)
-                        VERITYTREEDEV=/dev/disk/by-uuid/${value#UUID=}
-                        ;;
-                LABEL=*)
-                        VERITYTREEDEV=/dev/disk/by-label/${value#LABEL=}
-                        ;;
-                *)
-                        VERITYTREEDEV=${value}
-                        ;;
-                esac
-        ;;
-        verityhash=*)
-                VERITYHASH=${x#*=}
-        ;;
-        verityname=*)
-                VERITYNAME=${x#*=}
-        ;;
-        esac
-done
+if [ -e "/boot/efi/verity/verity.name" ]; then
+        VERITYNAME=$(cat /boot/efi/verity/verity.name)
+        echo "VERITYNAME $VERITYNAME"
+fi
 
 SETTINGS_COUNT=0
 if [ -n "$VERITYDATADEV" ]; then

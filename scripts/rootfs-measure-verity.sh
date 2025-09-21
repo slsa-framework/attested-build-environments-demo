@@ -18,7 +18,8 @@ echo "Setting up Verity for $ROOTFS_DEVICE on $VERITY_DEVICE"
 sudo mkdir -p /mnt/uefi/verity
 sudo veritysetup --verbose --debug format /dev/disk/azure/scsi1/lun0-part1 /dev/disk/azure/scsi1/lun0-part2 --root-hash-file /mnt/uefi/verity/rootfs.hash
 
-blkid -s UUID -o value $ROOTFS_DEVICE | sudo tee /mnt/uefi/verity/rootfs-device.uuid
-blkid -s UUID -o value $VERITY_DEVICE | sudo tee /mnt/uefi/verity/verity-device.uuid
+blkid -s UUID -o value $ROOTFS_DEVICE | sudo tee /mnt/uefi/verity/rootfs.uuid
+blkid -s UUID -o value $VERITY_DEVICE | sudo tee /mnt/uefi/verity/verityfs.uuid
+echo "slsa-verity" | sudo tee /mnt/uefi/verity/verity.name
 
 sudo umount /mnt/uefi
