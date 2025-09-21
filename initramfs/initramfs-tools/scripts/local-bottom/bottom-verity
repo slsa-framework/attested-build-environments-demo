@@ -16,6 +16,9 @@ case "${1}" in
 		;;
 esac
 
+ls -al /dev/disk/by-label
+ls -al /dev/disk/by-partlabel
+
 if [ -e "/boot/efi/verity/verity.name" ]; then
     VERITYNAME=$(cat /boot/efi/verity/verity.name)
     echo "VERITYNAME $VERITYNAME"

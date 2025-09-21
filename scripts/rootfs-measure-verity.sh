@@ -6,7 +6,7 @@ set -e
 LUN_ID="0"
 # TODO: Look it up by 'cloudimg-rootfs' partition label
 ROOTFS_DEVICE="/dev/disk/azure/scsi1/lun${LUN_ID}-part1"
-# TODO: Look it up by 'verity-device' GPT partition name
+# TODO: Look it up by 'verity-tree' GPT partition name
 VERITY_DEVICE="/dev/disk/azure/scsi1/lun${LUN_ID}-part2"
 # TODO: Look it up by 'UEFI' partition label
 UEFI_DEVICE="/dev/disk/azure/scsi1/lun${LUN_ID}-part15"

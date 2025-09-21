@@ -45,3 +45,7 @@ tar -czf "$SCRIPTPATH"/image.tar.gz -C $TMP_DRIVE_PATH .
 
 echo Updating initramfs
 sudo cp "$TMP_DRIVE_PATH/initrd.img-$(uname -r)" /boot/
+
+echo Enabling initramfs
+sudo sed -i '/^GRUB_FORCE_PARTUUID/ s/^/#/' /etc/default/grub.d/40-force-partuuid.cfg
+sudo update-grub
