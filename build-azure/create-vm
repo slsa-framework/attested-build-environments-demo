@@ -26,5 +26,7 @@ az vm create --resource-group $AZURE_RESOURCE_GROUP \
              --nic-delete-option delete \
              --os-disk-delete-option detach \
              --patch-mode ImageDefault \
-             --boot-diagnostics-storage ""  \
              $VM_EXTRA_ARGS
+
+az vm boot-diagnostics enable --resource-group $AZURE_RESOURCE_GROUP \
+                              --name $VM_NAME

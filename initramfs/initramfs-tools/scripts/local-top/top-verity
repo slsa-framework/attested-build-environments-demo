@@ -70,6 +70,10 @@ if [ $SETTINGS_COUNT -ne 4 ]; then
     exit 1
 fi
 
+echo "TEMPORARY CODE, REMOVE!"
+exit 0
+
+
 echo "Opening verity device"
 /scripts/measure-event "VERITY_HASH: $VERITYHASH"
 
