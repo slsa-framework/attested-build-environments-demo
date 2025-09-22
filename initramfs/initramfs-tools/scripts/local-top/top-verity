@@ -71,11 +71,12 @@ if [ $SETTINGS_COUNT -ne 4 ]; then
 fi
 
 echo "Verifying verity hashes"
+ret=0
 veritysetup --verbose --debug verify "$VERITYDATADEV" "$VERITYTREEDEV" "$VERITYHASH" || ret=$?
-echo "veritysetup verify returned $ret"
-
-echo "TEMPORARY CODE, REMOVE!"
-exit 0
+if [ $ret -ne 0 ]; then
+    echo "veritysetup verification failed!"
+    exit 1
+fi
 
 echo "Opening verity device"
 /scripts/measure-event "VERITY_HASH: $VERITYHASH"
