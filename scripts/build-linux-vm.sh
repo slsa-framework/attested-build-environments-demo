@@ -16,7 +16,7 @@ echo Installing software desired for the eventual image
 apt-get update
 apt-get install -y golang tpm2-tools
 
-echo Setting public keys
+echo "Setting public keys from $SSH_KEYS_URL"
 mkdir -p /home/$VM_USER/.ssh
 touch /home/$VM_USER/.ssh/authorized_keys
 curl $SSH_KEYS_URL >> /home/$VM_USER/.ssh/authorized_keys
