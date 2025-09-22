@@ -25,7 +25,7 @@ scp -r -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa "$SCRIPTPATH/../scripts"  "$
 scp    -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa "$SCRIPTPATH/image-attestation"  "${VM_USER}@${IP_ADDR}":
 
 echo "Building VM image..."
-ssh    -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa "${VM_USER}@${IP_ADDR}" "sudo scripts/build-linux-vm.sh"
+ssh    -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa "${VM_USER}@${IP_ADDR}" "sudo SSH_KEYS_URL=$SSH_KEYS_URL scripts/build-linux-vm.sh"
 scp    -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa "${VM_USER}@${IP_ADDR}":~/scripts/image.tar.gz .
 
 echo "Deallocating image VM..."
@@ -60,11 +60,11 @@ ssh    -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa "${VM_USER}@${IP_ADDR}" "sud
 ssh    -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa "${VM_USER}@${IP_ADDR}" "sudo scripts/rootfs-measure-verity.sh"
 
 echo "Deleting hasher VM..."
-az vm delete --id $HASHER_VM_ID
+az vm delete --id $HASHER_VM_ID --yes
 
 echo "Creating image version ...
 $SCRIPTPATH/create-image $DISK_ID
 
 echo "Swapping OS disk back...
 az vm update --name $IMAGE_VM_NAME --resource-group $AZURE_RESOURCE_GROUP --os-disk $DISK_ID
-az disk delete --id $SWAP_DISK_ID
+az disk delete --id $SWAP_DISK_ID --yes
