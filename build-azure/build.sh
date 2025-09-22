@@ -28,9 +28,20 @@ echo "Building VM image..."
 ssh    -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa "${VM_USER}@${IP_ADDR}" "sudo scripts/build-linux-vm.sh"
 scp    -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa "${VM_USER}@${IP_ADDR}":~/scripts/image.tar.gz .
 
-echo "Deleting image VM and detaching OS disk"
+#echo "Deleting image VM and detaching OS disk"
+#DISK_ID=$(az vm show --id $IMAGE_VM_ID | jq -r ".storageProfile.osDisk.managedDisk.id")
+#az vm delete --id $IMAGE_VM_ID --yes
+
+echo "Deallocating image VM"
+az vm deallocate --id $IMAGE_VM_ID
+
+echo "Swapping OS disk"
 DISK_ID=$(az vm show --id $IMAGE_VM_ID | jq -r ".storageProfile.osDisk.managedDisk.id")
-az vm delete --id $IMAGE_VM_ID --yes
+IMAGE_ID=$(az disk show --id $DISK_ID | jq -r ".creationData.imageReference.id")
+SWAP_DISK_NAME="${VM_NAME}-$(openssl rand -base64 12 | tr -dc 'A-Za-z0-9' | head -c 16 ; echo)"
+az disk create --image-reference $IMAGE_ID --resource-group $AZURE_RESOURCE_GROUP --name $SWAP_DISK_NAME --security-type TrustedLaunch
+SWAP_DISK_ID=$(az disk show --resource-group $AZURE_RESOURCE_GROUP --name $SWAP_DISK_NAME | jq -r ".id")
+az vm update --name $IMAGE_VM_NAME --resource-group $AZURE_RESOURCE_GROUP --os-disk $SWAP_DISK_ID
 
 echo "Creating hasher VM..."
 HASHER_VM_NAME="${AZURE_VM_NAME}hash"
@@ -51,8 +62,12 @@ scp -r -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa "$SCRIPTPATH/../scripts"  "$
 ssh    -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa "${VM_USER}@${IP_ADDR}" "sudo scripts/rootfs-prepare-verity.sh"
 ssh    -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa "${VM_USER}@${IP_ADDR}" "sudo scripts/rootfs-measure-verity.sh"
 
-echo "Deallocating hasher VM"
-az vm deallocate --id $HASHER_VM_ID
+echo "Deleting hasher VM"
+az vm delete --id $HASHER_VM_ID
 
-echo "Creating image version ..."
+echo "Creating image version ...
 $SCRIPTPATH/create-image $DISK_ID
+
+echo "Swapping OS disk back ...
+az vm update --name $IMAGE_VM_NAME --resource-group $AZURE_RESOURCE_GROUP --os-disk $DISK_ID
+az disk delete --id $SWAP_DISK_ID
