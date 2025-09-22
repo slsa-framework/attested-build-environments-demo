@@ -24,9 +24,6 @@ chown -R $VM_USER:$VM_USER /home/$VM_USER/.ssh
 chmod 700 /home/$VM_USER/.ssh
 chmod 600 /home/$VM_USER/.ssh/authorized_keys
 
-echo "/home/$VM_USER/.ssh/authorized_keys"
-cat /home/$VM_USER/.ssh/authorized_keys
-
 echo Remove apt postinstall steps that impact the boot flow
 rm /etc/kernel/postinst.d/zz-update-grub
 rm /etc/kernel/postinst.d/initramfs-tools

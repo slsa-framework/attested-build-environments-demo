@@ -35,7 +35,6 @@ echo "Swapping OS disk..."
 DISK_ID=$(az vm show --id $IMAGE_VM_ID | jq -r ".storageProfile.osDisk.managedDisk.id")
 IMAGE_ID=$(az disk show --id $DISK_ID | jq -r ".creationData.imageReference.id")
 SWAP_DISK_NAME="${AZURE_VM_NAME}-$(openssl rand -base64 12 | tr -dc 'A-Za-z0-9' | head -c 16 ; echo)"
-echo "az disk create --image-reference $IMAGE_ID --resource-group $AZURE_RESOURCE_GROUP --name $SWAP_DISK_NAME --security-type TrustedLaunch"
 az disk create --image-reference $IMAGE_ID --resource-group $AZURE_RESOURCE_GROUP --name $SWAP_DISK_NAME --security-type TrustedLaunch
 SWAP_DISK_ID=$(az disk show --resource-group $AZURE_RESOURCE_GROUP --name $SWAP_DISK_NAME | jq -r ".id")
 az vm update --name $IMAGE_VM_NAME --resource-group $AZURE_RESOURCE_GROUP --os-disk $SWAP_DISK_ID
@@ -62,8 +61,13 @@ ssh    -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa "${VM_USER}@${IP_ADDR}" "sud
 echo "Deleting hasher VM..."
 az vm delete --id $HASHER_VM_ID --yes
 
-echo "Creating image version ...
-$SCRIPTPATH/create-image $DISK_ID
+#echo "Creating image version ...
+#$SCRIPTPATH/create-image $DISK_ID
+
+echo "Creating disk copy..."
+CLONE_DISK_NAME="${AZURE_VM_NAME}-$(openssl rand -base64 12 | tr -dc 'A-Za-z0-9' | head -c 16 ; echo)"
+az disk create --resource-group $AZURE_RESOURCE_GROUP --name $CLONE_DISK_NAME --source $DISK_ID
+az vm disk attach --resource-group $AZURE_RESOURCE_GROUP --vm-name $IMAGE_VM_NAME --name $CLONE_DISK_NAME --lun 0
 
 echo "Swapping OS disk back...
 az vm update --name $IMAGE_VM_NAME --resource-group $AZURE_RESOURCE_GROUP --os-disk $DISK_ID
