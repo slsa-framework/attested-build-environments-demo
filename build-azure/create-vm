@@ -24,7 +24,7 @@ az vm create --resource-group $AZURE_RESOURCE_GROUP \
              --size Standard_D4ds_v5 \
              --security-type TrustedLaunch \
              --nic-delete-option delete \
-             --os-disk-delete-option detach \
+             --os-disk-delete-option delete \
              --patch-mode ImageDefault \
              $VM_EXTRA_ARGS
 
