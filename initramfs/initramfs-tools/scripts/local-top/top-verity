@@ -71,11 +71,9 @@ if [ $SETTINGS_COUNT -ne 4 ]; then
 fi
 
 #### TEMP DEBUG
-lsblk
-
 echo "Verifying data disk"
 ret=0
-veritysetup --verbose --debug verify /dev/sdc1 /dev/sdc2 "$VERITYHASH" || ret=$?
+veritysetup --verbose --debug verify /dev/disk/azure/scsi1/lun0-part1 /dev/disk/azure/scsi1/lun0-part2 "$VERITYHASH" || ret=$?
 if [ $ret -ne 0 ]; then
     echo "veritysetup verification failed!"
     exit 1
@@ -83,7 +81,7 @@ fi
 
 echo "Verifying OS disk"
 ret=0
-veritysetup --verbose --debug verify /dev/sda1 /dev/sda2 "$VERITYHASH" || ret=$?
+veritysetup --verbose --debug verify /dev/disk/azure/root-part1 /dev/disk/azure/root-part2 "$VERITYHASH" || ret=$?
 if [ $ret -ne 0 ]; then
     echo "veritysetup verification failed!"
     exit 1

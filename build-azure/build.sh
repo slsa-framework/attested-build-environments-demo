@@ -69,6 +69,6 @@ CLONE_DISK_NAME="${AZURE_VM_NAME}-$(openssl rand -base64 12 | tr -dc 'A-Za-z0-9'
 az disk create --resource-group $AZURE_RESOURCE_GROUP --name $CLONE_DISK_NAME --source $DISK_ID
 az vm disk attach --resource-group $AZURE_RESOURCE_GROUP --vm-name $IMAGE_VM_NAME --name $CLONE_DISK_NAME --lun 0
 
-echo "Swapping OS disk back...
+echo "Swapping OS disk back..."
 az vm update --name $IMAGE_VM_NAME --resource-group $AZURE_RESOURCE_GROUP --os-disk $DISK_ID
 az disk delete --id $SWAP_DISK_ID --yes
