@@ -4,26 +4,42 @@ This is a proof-of-concept for the OpenSSF SLSA draft
 [Attested Build Environments (BuildEnv) track](https://github.com/slsa-framework/slsa/issues/975).
 
 The CLI in this repo implements vTPM-based attestation and
-integrity checking of a Linux VM image. This repo also provides
+integrity checking of a Linux VM image running in Azure. This repo also provides
 demo GHA workflows showcasing how to meet SLSA BuildEnv L1 and L2 (WIP).
+
+This Demo uses 2 VMs - `ImageVM` and `HasherVM`.
+- `ImageVM` is used to build the target image, it could be populated with all the tools and data needed
+- `HasherVM` is a "worker" VM whose sole purpose is to compute Verity tree over the ImageVM root FS.
+
+```mermaid
+  graph LR;
+  ImageVM-- root FS disk -->ImageDisk;
+  HasherVM-- computes hashes -->ImageDisk;
+```
+
+Once `HasherVM` completes setting up `ImageDisk` it could be snapshotted to create clones of the `ImageVM`.
 
 ## How To Use
 
-### Generate the initramfs
+### Configure Azure account
 
-From a fresh Ubuntu 20+ VM, install the initramfs scripts:
-```
-sudo initramfs/install.sh
-```
+_You need to have Azure account to run this demo_
 
-Generate the initramfs:
-```
-sudo mkinitramfs -o image-attestation.img
-```
+Few configuration settings need to be defined in [Actions secrets](https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/use-secrets). None of these are secrets per se but they are treated as secrets to reduce visibility of private resources in public Actions workflow logs:
+- `AZURE_SUBSCRIPTION_ID` - Azure subscription id that you have `Owner` access to
+- `AZURE_RESOURCE_GROUP` - resource group name where VM and all associated resources are provisioned
+- `AZURE_TENANT_ID` - Azure Entra tenant id where App is located
+- `AZURE_CLIENT_ID` - Azure app id for accessing subscription from the Actions workflow (**MUST** have `Contributor` access to the subscription)
+- `AZURE_LOCATION` - location where VM is provisioned (e.g. `eastus`)
+- `AZURE_VM_NAME` - Name to be used for the VM
 
-### Update GRUB
+You need to configure OIDC credentials for the app to let Actions workflow acquire access token for this app ([doc link](https://docs.github.com/en/actions/how-tos/secure-your-work/security-harden-deployments/oidc-in-azure)).
 
-TODO
+### Dispath the workflow
+
+Dispatch `Image Build` workflow to run this demo. Workflow will build a VM and give you access to this VM by adding GitHub actor public keys into the authorized keys for the `azureuser`. Keys are downloaded from `https://github.com/<your alias>.keys`
+
+After the VM is built you will be able to SSH to the VM with `ssh azureuser@<ip address>` and poke around.
 
 ### CLI
 
