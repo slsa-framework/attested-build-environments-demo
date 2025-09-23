@@ -49,3 +49,4 @@ sudo cp "$TMP_DRIVE_PATH/initrd.img-$(uname -r)" /boot/
 echo Enabling initramfs
 sudo sed -i '/^GRUB_FORCE_PARTUUID/ s/^/#/' /etc/default/grub.d/40-force-partuuid.cfg
 sudo update-grub
+sudo chmod -w /boot/grub/grubenv
