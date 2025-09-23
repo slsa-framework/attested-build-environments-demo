@@ -74,7 +74,15 @@ mkdir -p /mnt/overlay/work
 mkdir -p /mnt/overlay/upper
 mount -t overlay overlay -o lowerdir=/roroot,workdir=/mnt/overlay/work,upperdir=/mnt/overlay/upper "${rootmnt?}"
 
+echo "OverlayFS created!"
 /scripts/measure-event "OVERLAY_SUCCESS"
 
 mkdir -p /root/measurements
 cp /measurements/eventlog /root/measurements
+
+ls -al / || echo "There is no /"
+ls -al "$rootmnt" || echo "There is no $rootmnt"
+ls -al /mnt || echo "There is no /mnt"
+ls -al /mnt/overlay || echo "There is no /mnt/overlay"
+ls -al /root || echo "There is no /root"
+ls -al /roroot || echo "There is no /roroot"
