@@ -79,15 +79,15 @@ fi
 #    exit 1
 #fi
 
-echo "Verifying OS disk"
-ret=0
-veritysetup --verbose --debug verify /dev/disk/azure/root-part1 /dev/disk/azure/root-part2 "$VERITYHASH" || ret=$?
-if [ $ret -ne 0 ]; then
-    echo "veritysetup verification failed!"
-    exit 1
-fi
+#echo "Verifying OS disk"
+#ret=0
+#veritysetup --verbose --debug verify /dev/disk/azure/root-part1 /dev/disk/azure/root-part2 "$VERITYHASH" || ret=$?
+#if [ $ret -ne 0 ]; then
+#    echo "veritysetup verification failed!"
+#    exit 1
+#fi
 
-exit 0
+#exit 0
 ####
 
 echo "Verifying verity hashes"
