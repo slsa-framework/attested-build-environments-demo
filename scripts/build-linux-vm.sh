@@ -48,5 +48,5 @@ sudo cp "$TMP_DRIVE_PATH/initrd.img-$(uname -r)" /boot/
 
 echo Enabling initramfs
 sudo sed -i '/^GRUB_FORCE_PARTUUID/ s/^/#/' /etc/default/grub.d/40-force-partuuid.cfg
+sudo sed -i 's/^GRUB_RECORDFAIL_TIMEOUT=.*/GRUB_RECORDFAIL_TIMEOUT=0/' /etc/default/grub.d/50-cloudimg-settings.cfg 
 sudo update-grub
-sudo chmod -w /boot/grub/grubenv
