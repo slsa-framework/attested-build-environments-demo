@@ -58,8 +58,8 @@ scp -r -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa "$SCRIPTPATH/../scripts"  "$
 ssh    -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa "${VM_USER}@${IP_ADDR}" "sudo scripts/rootfs-prepare-verity.sh"
 ssh    -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa "${VM_USER}@${IP_ADDR}" "sudo scripts/rootfs-measure-verity.sh"
 
-echo "Deleting hasher VM..."
-az vm delete --id $HASHER_VM_ID --yes
+#echo "Deleting hasher VM..."
+#az vm delete --id $HASHER_VM_ID --yes
 
 #echo "Creating image version ...
 #$SCRIPTPATH/create-image $DISK_ID
@@ -69,6 +69,6 @@ az vm delete --id $HASHER_VM_ID --yes
 #az disk create --resource-group $AZURE_RESOURCE_GROUP --name $CLONE_DISK_NAME --source $DISK_ID
 #az vm disk attach --resource-group $AZURE_RESOURCE_GROUP --vm-name $IMAGE_VM_NAME --name $CLONE_DISK_NAME --lun 0
 
-echo "Attaching OS disk back..."
-az vm update --name $IMAGE_VM_NAME --resource-group $AZURE_RESOURCE_GROUP --os-disk $DISK_ID
-az disk delete --id $SWAP_DISK_ID --yes
+#echo "Attaching OS disk back..."
+#az vm update --name $IMAGE_VM_NAME --resource-group $AZURE_RESOURCE_GROUP --os-disk $DISK_ID
+#az disk delete --id $SWAP_DISK_ID --yes
