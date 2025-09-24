@@ -54,7 +54,7 @@ umount /root
 
 echo Mounting verity device to /roroot
 mkdir -p /roroot
-mount "/dev/mapper/$verityname" /roroot
+mount "/dev/mapper/$VERITYNAME" /roroot
 
 # TODO: in a real implementation, encrypt the device
 
