@@ -9,11 +9,8 @@ echo "Creating resource group..."
 az account set --subscription $AZURE_SUBSCRIPTION_ID
 az group create --resource-group $AZURE_RESOURCE_GROUP --location $AZURE_LOCATION
 
-#echo "Creating image gallery..."
-#$SCRIPTPATH/create-gallery
-
 echo "Creating image VM..."
-IMAGE_VM_NAME="${AZURE_VM_NAME}image"
+IMAGE_VM_NAME="${AZURE_VM_NAME}"
 $SCRIPTPATH/create-vm $IMAGE_VM_NAME
 IMAGE_VM_ID=$(az vm show --resource-group $AZURE_RESOURCE_GROUP --name $IMAGE_VM_NAME | jq -r ".id")
 IP_ADDR=$($SCRIPTPATH/get-ip $IMAGE_VM_ID)
@@ -60,14 +57,6 @@ ssh    -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa "${VM_USER}@${IP_ADDR}" "sud
 
 echo "Deleting hasher VM..."
 az vm delete --id $HASHER_VM_ID --yes
-
-#echo "Creating image version ...
-#$SCRIPTPATH/create-image $DISK_ID
-
-#echo "Creating disk copy..."
-#CLONE_DISK_NAME="${AZURE_VM_NAME}-$(openssl rand -base64 12 | tr -dc 'A-Za-z0-9' | head -c 16 ; echo)"
-#az disk create --resource-group $AZURE_RESOURCE_GROUP --name $CLONE_DISK_NAME --source $DISK_ID
-#az vm disk attach --resource-group $AZURE_RESOURCE_GROUP --vm-name $IMAGE_VM_NAME --name $CLONE_DISK_NAME --lun 0
 
 echo "Attaching OS disk back..."
 az vm update --name $IMAGE_VM_NAME --resource-group $AZURE_RESOURCE_GROUP --os-disk $DISK_ID

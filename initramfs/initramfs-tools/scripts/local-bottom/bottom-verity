@@ -79,16 +79,3 @@ echo "OverlayFS created!"
 
 mkdir -p /root/measurements
 cp /measurements/eventlog /root/measurements
-
-echo "->>>ls -al /"
-ls -al / || echo "There is no /"
-echo "->>>ls -al rootmnt=$rootmnt"
-ls -al "$rootmnt" || echo "There is no $rootmnt"
-echo "->>>ls -al /mnt"
-ls -al /mnt || echo "There is no /mnt"
-echo "->>>ls -al /mnt/overlay"
-ls -al /mnt/overlay || echo "There is no /mnt/overlay"
-echo "->>>ls -al /root"
-ls -al /root || echo "There is no /root"
-echo "->>>ls -al /roroot"
-ls -al /roroot || echo "There is no /roroot"
