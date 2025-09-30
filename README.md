@@ -19,6 +19,14 @@ This Demo uses 2 VMs - `ImageVM` and `HasherVM`.
 
 Once `HasherVM` completes setting up `ImageDisk` it could be snapshotted to create clones of the `ImageVM`.
 
+## Image configuration
+
+Image has 3 notable partitions - `boot`, `root file system` and `verity tree`. Verity tree contains hashes for the root file system. Verity configuration data (e.g., root hash) is passed in a well-known configuration file within the boot partition. This file is processed by `initrd` to properly initialize (i.e. open) Verity device. Root hash is measured into TPM and hence is present in the remote attestation quote.
+
+Initrd sets up OverlayFS for the root file system using local ephemeral disk as a storage device. Build environments are ephemeral at `Build L3` and intermediate data is not expected to be preserved upon the termination of the environment. To achieve `BuildEnv L3` temporary storage must be encrypted, which could be done with an ephemeral key generated in Initrd upon booting the environment.  `BuildEnv L2` does not require encryption.
+
+GRUB environment block is disabled to prevent unintended modificaton of the root file system upon booting. 
+
 ## How To Use
 
 ### Configure Azure account
