@@ -23,8 +23,6 @@ runs:
       run: |
         scripts/gen-ref-values.sh ${{ inputs.reference-path }}
 
-    - run: ls -al /tmp
-
     - name: Save the signed Sigstore bundles
       id: upload
       if: ${{ inputs.save == 'true' }}
