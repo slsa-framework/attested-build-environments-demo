@@ -28,7 +28,7 @@ scp    -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa "${VM_USER}@${IP_ADDR}":~/sc
 echo "Deallocating image VM..."
 az vm deallocate --id $IMAGE_VM_ID
 
-echo "Detachinging OS disk..."
+echo "Detaching OS disk..."
 DISK_ID=$(az vm show --id $IMAGE_VM_ID | jq -r ".storageProfile.osDisk.managedDisk.id")
 IMAGE_ID=$(az disk show --id $DISK_ID | jq -r ".creationData.imageReference.id")
 SWAP_DISK_NAME="${AZURE_VM_NAME}-$(openssl rand -base64 12 | tr -dc 'A-Za-z0-9' | head -c 16 ; echo)"
