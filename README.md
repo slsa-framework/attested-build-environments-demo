@@ -19,6 +19,8 @@ This Demo uses 2 VMs - `ImageVM` and `HasherVM`.
 
 Once `HasherVM` completes setting up `ImageDisk` it could be snapshotted to create clones of the `ImageVM`.
 
+Both VMs have to be trusted given that they have write access to the image root file system. Build image providers operating at BuildEnv 3 level should be protecting disk integrity while in use and at rest (as disk is reattached from ImageVM to the HasherVM), e.g. by encrypting the disk.
+
 ## Image configuration
 
 Image has 3 notable partitions - `boot`, `root file system` and `verity tree`. Verity tree contains hashes for the root file system. Verity configuration data (e.g., root hash) is passed in a well-known configuration file within the boot partition. This file is processed by `initrd` to properly initialize (i.e. open) Verity device. Root hash is measured into TPM and hence is present in the remote attestation quote.
