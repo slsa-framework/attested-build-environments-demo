@@ -6,9 +6,10 @@ on:
 permissions:
   id-token: write
   contents: write
+  attestations: write
+  packages: write
 jobs:
-  image:
-    if: github.actor == 'chkimes'
+  prep:
     runs-on: ubuntu-latest
 
     steps:
@@ -26,6 +27,26 @@ jobs:
         go get ./...
         go build -o ../build-azure ./...
 
+    - name: Upload image attestation tool
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      with:
+        name: image-attestation
+        path: build-azure/image-attestation
+
+  image:
+    needs: prep
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v4
+
+    - name: Download image attestation tool
+      uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+      with:
+        name: image-attestation
+        path: build-azure
+
     - name: Login to Azure
       uses: azure/login@532459ea530d8321f2fb9bb10d1e0bcf23869a43 # v3.0.0
       with:
@@ -39,6 +60,7 @@ jobs:
         AZURE_RESOURCE_GROUP: ${{ secrets.AZURE_RESOURCE_GROUP }}
         AZURE_LOCATION: ${{ secrets.AZURE_LOCATION }}
         AZURE_VM_NAME: ${{ secrets.AZURE_VM_NAME }}
+        SSH_KEYS_URL: https://github.com/${{ github.actor }}.keys
       run: |
         set -e
 
@@ -54,7 +76,31 @@ jobs:
         path: img/*
 
     - name: Generate provenance
-      uses: github-early-access/generate-build-provenance@5fb744556d7e95958990349de0ddb84909c219bb #main
+      uses: actions/attest-build-provenance@977bb373ede98d70efdf65b84cb5f73e068dcc2a #v3
       with:
         subject-path: img/*
     
+  attest:
+    needs: [prep, image]
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v4
+
+    - name: Login to Azure
+      uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5 # v2
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+    - name: Attesting Azure VM
+      env:
+        AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        AZURE_RESOURCE_GROUP: ${{ secrets.AZURE_RESOURCE_GROUP }}
+        AZURE_VM_NAME: ${{ secrets.AZURE_VM_NAME }}
+      run: |
+        set -e
+
+        build-azure/attest.sh

@@ -16,17 +16,16 @@ case "${1}" in
 		;;
 esac
 
-for x in $(cat /proc/cmdline); do
-#for x in $(cat tmpcmdline); do
-        case ${x} in
-        verityname=*)
-                VERITYNAME=${x#*=}
-        ;;
-        overlaydev=*)
-                OVERLAYDEV=${x#*=}
-        ;;
-        esac
-done
+echo "Reading verity configuration"
+mkdir -p /boot/efi
+mount -t vfat -o ro /dev/disk/by-label/UEFI /boot/efi
+
+if [ -e "/boot/efi/verity/verity.name" ]; then
+    VERITYNAME=$(cat /boot/efi/verity/verity.name)
+    echo "VERITYNAME $VERITYNAME"
+fi
+
+umount /boot/efi
 
 if [ -z "$VERITYNAME" ]; then
     echo "Verity not configured. Bypassing overlay creation."
@@ -34,11 +33,14 @@ if [ -z "$VERITYNAME" ]; then
     exit 0
 fi
 
-if [ ! -e "/dev/mapper/$verityname" ]; then
+if [ ! -e "/dev/mapper/$VERITYNAME" ]; then
     echo "Verity not setup. Bypassing overlay creation."
     /scripts/measure-event "OVERLAY_BYPASS"
     exit 0
 fi
+
+# TODO Discover it by 'LABEL="Temporary Storage"'
+OVERLAYDEV="/dev/sdb1"
 
 if [ -z "$OVERLAYDEV" ]; then
     echo "Overlay settings incorrect! Must supply overlaydev"
@@ -52,7 +54,7 @@ umount /root
 
 echo Mounting verity device to /roroot
 mkdir -p /roroot
-mount "/dev/mapper/$verityname" /roroot
+mount "/dev/mapper/$VERITYNAME" /roroot
 
 # TODO: in a real implementation, encrypt the device
 
@@ -72,6 +74,7 @@ mkdir -p /mnt/overlay/work
 mkdir -p /mnt/overlay/upper
 mount -t overlay overlay -o lowerdir=/roroot,workdir=/mnt/overlay/work,upperdir=/mnt/overlay/upper "${rootmnt?}"
 
+echo "OverlayFS created!"
 /scripts/measure-event "OVERLAY_SUCCESS"
 
 mkdir -p /root/measurements
