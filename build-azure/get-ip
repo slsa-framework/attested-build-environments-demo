@@ -1,0 +1,11 @@
+#!/bin/bash
+
+set -e
+
+VM_RESOURCE=$1
+
+NIC_RESOURCE=$(az vm show --id $VM_RESOURCE | jq -r ".networkProfile.networkInterfaces[0].id")
+IP_RESOURCE=$(az network nic show --id $NIC_RESOURCE | jq -r ".ipConfigurations[0].publicIPAddress.id")
+IP_ADDR=$(az network public-ip show --id $IP_RESOURCE | jq -r ".ipAddress")
+
+echo $IP_ADDR

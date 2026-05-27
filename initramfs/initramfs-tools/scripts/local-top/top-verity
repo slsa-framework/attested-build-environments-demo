@@ -16,49 +16,33 @@ case "${1}" in
 		;;
 esac
 
-for x in $(cat /proc/cmdline); do
-#for x in $(cat tmpcmdline); do
-        case ${x} in
-        veritydata=*)
-                value=${x#*=}
+echo "Reading verity configuration"
+mkdir -p /boot/efi
+mount -t vfat -o ro /dev/disk/by-label/UEFI /boot/efi
 
-                # Find the device node path depending on the form of veritydata= :
-                case ${value} in
-                UUID=*)
-                        VERITYDATADEV=/dev/disk/by-uuid/${value#UUID=}
-                        ;;
-                LABEL=*)
-                        VERITYDATADEV=/dev/disk/by-label/${value#LABEL=}
-                        ;;
-                *)
-                        VERITYDATADEV=${value}
-                        ;;
-                esac
-        ;;
-        veritytree=*)
-                value=${x#*=}
+if [ -e "/boot/efi/verity/rootfs.uuid" ]; then
+        UUID=$(cat /boot/efi/verity/rootfs.uuid)
+        VERITYDATADEV=/dev/disk/by-uuid/${UUID}
+        echo "VERITYDATADEV $VERITYDATADEV"
+fi
 
-                # Find the device node path depending on the form of veritytree= :
-                case ${value} in
-                UUID=*)
-                        VERITYTREEDEV=/dev/disk/by-uuid/${value#UUID=}
-                        ;;
-                LABEL=*)
-                        VERITYTREEDEV=/dev/disk/by-label/${value#LABEL=}
-                        ;;
-                *)
-                        VERITYTREEDEV=${value}
-                        ;;
-                esac
-        ;;
-        verityhash=*)
-                VERITYHASH=${x#*=}
-        ;;
-        verityname=*)
-                VERITYNAME=${x#*=}
-        ;;
-        esac
-done
+if [ -e "/boot/efi/verity/verityfs.uuid" ]; then
+        UUID=$(cat /boot/efi/verity/verityfs.uuid)
+        VERITYTREEDEV=/dev/disk/by-uuid/${UUID}
+        echo "VERITYTREEDEV $VERITYTREEDEV"
+fi
+
+if [ -e "/boot/efi/verity/rootfs.hash" ]; then
+        VERITYHASH=$(cat /boot/efi/verity/rootfs.hash)
+        echo "VERITYHASH $VERITYHASH"
+fi
+
+if [ -e "/boot/efi/verity/verity.name" ]; then
+        VERITYNAME=$(cat /boot/efi/verity/verity.name)
+        echo "VERITYNAME $VERITYNAME"
+fi
+
+umount /boot/efi
 
 SETTINGS_COUNT=0
 if [ -n "$VERITYDATADEV" ]; then
@@ -85,6 +69,14 @@ if [ $SETTINGS_COUNT -ne 4 ]; then
     echo "Verity settings incorrect! Must supply veritydata, veritytree, verityhash, verityname"
     exit 1
 fi
+
+#echo "Verifying verity hashes"
+#ret=0
+#veritysetup --verbose --debug verify "$VERITYDATADEV" "$VERITYTREEDEV" "$VERITYHASH" || ret=$?
+#if [ $ret -ne 0 ]; then
+#    echo "veritysetup verification failed!"
+#    exit 1
+#fi
 
 echo "Opening verity device"
 /scripts/measure-event "VERITY_HASH: $VERITYHASH"

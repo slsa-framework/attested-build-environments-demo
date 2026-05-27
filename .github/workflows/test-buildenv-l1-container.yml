@@ -2,6 +2,7 @@
 name: Test for BuildEnv L1 container build
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
